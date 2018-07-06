@@ -45,7 +45,7 @@ contract Task {
   }
 
 
-  function makeTask(bytes32 _specificationHash) public
+  function makeTask(bytes32 _specificationHash) public returns (uint256)
   {
     taskCount += 1;
 
@@ -58,6 +58,7 @@ contract Task {
     //  rating: 0
     //});
     emit TaskAdded(taskCount);
+    return taskCount;
   }
 
   function getTaskCount() public view returns (uint256) {

@@ -2,8 +2,11 @@ import React from 'react';
 import {Button, Jumbotron, Row, Col, Panel } from 'react-bootstrap';
 import uuid from 'uuid';
 const ecp = require('./ecp');
+const itemHelper = require('./itemHelper');
 import Task from '../build/contracts/Task.json'
 import getWeb3 from './utils/getWeb3'
+import Example from './modalAdd';
+import ItemList from './itemList'
 
 var extPicList = [];
 
@@ -14,7 +17,8 @@ export default class Gallery extends React.Component {
     this.state = {
       picList: extPicList,
       selectedFile: '',
-      noTasks: 'Not loaded'
+      noTasks: 'Not loaded',
+      items: [{name: 'default'}, {name: 'default2'}]
     }
 
   }
@@ -59,6 +63,8 @@ export default class Gallery extends React.Component {
                 noTasks: result.args.id.c[0]
               })
             }
+
+            this.loadItems();
         });
 
         return taskInstance.getTaskCount({from: accounts[0]})
@@ -73,6 +79,12 @@ export default class Gallery extends React.Component {
         })
       })
     })
+  }
+  async loadItems(){                                                                                    // Called from constructor to load all holes from colony
+    const items = await itemHelper.getItems();
+    this.setState({
+      items: items
+    });
   }
   handleAddTaskEvent = () => {
     console.log("Booyaka")
@@ -172,6 +184,10 @@ export default class Gallery extends React.Component {
             <p><Button bsStyle="primary" onClick={(e) => this.addTask()}>Learn more &raquo;</Button></p>
             <p><input type="file" id="fileInput" onChange={(e) => this.upload(e.target)}/></p>
             <p>No tasks: {this.state.noTasks}</p>
+            <Example
+              contract={this.state.contractTask}
+              account={this.state.account}
+              />
           </div>
         </Jumbotron>
 
@@ -205,6 +221,10 @@ export default class Gallery extends React.Component {
             <p>&copy; 2016 Company, Inc.</p>
           </footer>
         </div>
+
+        <ItemList
+          items={this.state.items}
+          />
 
         <div id="petTemplate">
           <Col sm={6} md={4} lg={3}>
