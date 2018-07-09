@@ -1,10 +1,10 @@
 import React from 'react';
-import {Button, Jumbotron, Row, Col, Panel } from 'react-bootstrap';
+import {Button, Jumbotron, Row, Col } from 'react-bootstrap';
 import uuid from 'uuid';
-const ecp = require('./ecp');
-const itemHelper = require('./itemHelper');
-import Task from '../build/contracts/Task.json'
-import getWeb3 from './utils/getWeb3'
+const ecp = require('../libs/ecp');
+const itemHelper = require('../libs/itemHelper');
+import Task from '../../build/contracts/Task.json'
+import getWeb3 from '../utils/getWeb3'
 import Example from './modalAdd';
 import ItemList from './itemList'
 
@@ -81,14 +81,10 @@ export default class Gallery extends React.Component {
     })
   }
   async loadItems(){                                                                                    // Called from constructor to load all holes from colony
-    const items = await itemHelper.getItems();
+    const items = await itemHelper.getItems(this.state.web3, this.state.contractTask, this.state.account);
     this.setState({
       items: items
     });
-  }
-  handleAddTaskEvent = () => {
-    console.log("Booyaka")
-    //console.log(result.args.id.c[0])
   }
 
   async IpfsSavePic(ReaderData){
@@ -191,62 +187,9 @@ export default class Gallery extends React.Component {
           </div>
         </Jumbotron>
 
-        <div>
-          <Row>
-            <Col md={4}>
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p></p>
-            </Col>
-            <Col md={4}>
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p></p>
-           </Col>
-            <Col md={4}>
-              <h2>Heading</h2>
-              <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-              <p></p>
-            </Col>
-            <Col md={4}>
-              <h2>Heading</h2>
-              <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-              <p></p>
-            </Col>
-          </Row>
-
-          <hr/>
-
-          <footer>
-            <p>&copy; 2016 Company, Inc.</p>
-          </footer>
-        </div>
-
         <ItemList
           items={this.state.items}
           />
-
-        <div id="petTemplate">
-          <Col sm={6} md={4} lg={3}>
-            <Panel>
-              <Panel.Heading>
-                <Panel.Title componentClass="h3">Scrappy</Panel.Title>
-              </Panel.Heading>
-              <Panel.Body>
-                <img role="presentation" style={{"width" : "100%"}} src="https://animalso.com/wp-content/uploads/2017/01/Golden-Retriever_6.jpg"/>
-                <br/><br/>
-                <strong>Breed</strong>: <span>Golden Retriever</span><br/>
-                <strong>Age</strong>: <span>3</span><br/>
-                <strong>Location</strong>: <span>Warren, MI</span><br/><br/>
-                <Button bsStyle="primary" data-id="0">Adopt</Button>
-              </Panel.Body>
-            </Panel>
-          </Col>
-        </div>
-
-        {picList.map(pic =>
-          <p>{pic}</p>
-        )}
 
       </div>
     );

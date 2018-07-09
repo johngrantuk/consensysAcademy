@@ -1,9 +1,7 @@
 import React from 'react';
+import Item from './item'
 
 export default class ItemList extends React.Component {
-    constructor(props) {
-      super(props);
-    }
 
     render() {
       const items = this.props.items;
@@ -11,7 +9,7 @@ export default class ItemList extends React.Component {
       return (
         <div>
           {items.map(item =>
-            item.name
+            <Item itemInfo={item} key={item.name}></Item>
           )}
         </div>
       );
