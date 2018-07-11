@@ -38,25 +38,24 @@ contract('First test', async (accounts) => {
       let account_one = accounts[0];
       let account_two = accounts[1];
 
-      let bounty_amount = 10;
+      let bounty_amount = web3.toWei(1, 'ether');
       let itemHash = "Item No One";
 
       let instance = await Task.deployed();
 
       let account_one_starting_balance = await web3.eth.getBalance(account_one);
-      let account_two_starting_balance = await web3.eth.getBalance(account_two);
 
-      console.log("Balance1: " + account_one_starting_balance.toNumber());
-      console.log("Balance2: " + account_two_starting_balance.toNumber())
+      console.log("Balance1: " + web3.fromWei(account_one_starting_balance.toNumber()));
 
-      let testGasCost = await instance.makeTask.estimateGas(itemHash, {value: web3.toWei(bounty_amount, 'ether'), from: account_one});
+      let testGasCost = await instance.makeTask.estimateGas(itemHash, {value: bounty_amount, from: account_one});
       console.log('Estimated Gas cost: ' + testGasCost);
       console.log('Web3 Gas Price: ' + web3.fromWei(web3.eth.gasPrice));
 
-      let hash = await instance.makeTask.sendTransaction(itemHash, {value: web3.toWei(bounty_amount, 'ether'), from: account_one});
+      let hash = await instance.makeTask.sendTransaction(itemHash, {value: bounty_amount, from: account_one});
 
       const tx = await web3.eth.getTransaction(hash);
       const receipt = await web3.eth.getTransactionReceipt(hash);
+      console.log('makeTask receipt: ')
       console.log(receipt)
       const gasCost = tx.gasPrice.mul(receipt.gasUsed);
 
@@ -66,149 +65,64 @@ contract('First test', async (accounts) => {
       let account_one_ending_balance = await web3.eth.getBalance(account_one);
 
       account_one_ending_balance_check = account_one_starting_balance.minus(gasCost);
-      account_one_ending_balance_check = account_one_ending_balance_check.minus(web3.toWei(bounty_amount, 'ether'));
+      account_one_ending_balance_check = account_one_ending_balance_check.minus(bounty_amount);
 
       // Check no items
       assert.equal(account_one_ending_balance.toNumber(), account_one_ending_balance_check.toNumber(), "Bounty amount for make item wasn't correctly taken from the sender");
 
       hash = await instance.getTaskCount.call();
+      console.log('Get TaskCount await:')
       console.log(hash)
-      console.log("Other:")
+
       instance.getTaskCount.call().then(function(result) {
+        'Get TaskCount .then():'
         console.log(result);
+        // BigNumber { s: 1, e: 0, c: [ 1 ] }
+        console.log(result.toNumber())
       });
 
       instance.getAnswerCount.call(1).then(function(result) {
+        console.log('Answer Count: ')
         console.log(result);
+        // BigNumber { s: 1, e: 0, c: [ 0 ] }
+        console.log(result.toNumber())
       });
 
-
-      console.log('1')
       hash = await instance.addAnswer.sendTransaction(1, "Answer No 1", {from: account_two});
       // Check no answers
-      console.log('2')
+
       hash = await instance.addAnswer.sendTransaction(1, "Answer No 2", {from: accounts[2]});
       // Check no answers
-      console.log('3')
+
+      let account_two_starting_balance = await web3.eth.getBalance(accounts[2]);
+
+      console.log("Balance3: " + web3.fromWei(account_two_starting_balance.toNumber()));
+
       // Check from account_two fails
-      hash = await instance.acceptAnswer.sendTransaction(1, 1, {from: account_one});
-      console.log('4')
+      hash = await instance.acceptAnswer.sendTransaction(1, 2, {from: account_one});
+
       hash = await instance.getTask.call(1, {from: account_one});
-      console.log(hash)
-      /*
-      let account_two_ending_balance = await web3.eth.getBalance(account_two);
+      let specificationHash = web3.toAscii(hash[0]).replace(/\0/g, '');
+      console.log(specificationHash)
+      let owner = hash[1];
+      let deliverableHash = hash[2]; // UNUSED
+      let bounty = hash[3].toNumber();
+      let answerCount = hash[4].toNumber();
+      let finalised = hash[5];
+      let cancelled = hash[6];
+      let acceptedAnswerHash = web3.toAscii(hash[7]).replace(/\0/g, '');
 
-      assert.equal(account_two_ending_balance, account_two_starting_balance.plus(bounty_amount), "Amount wasn't correctly sent to the receiver");
+      assert.equal(specificationHash, itemHash, "Item hash wasn't same.");
+      assert.equal(owner, accounts[0], "Item owner not correct.");
+      assert.equal(bounty, bounty_amount, "Item Bounty not correct.");
+      assert.equal(answerCount, 2, "Should be 2 answers.");
+      assert.equal(finalised, true, "Item should be finalised.");
+      assert.equal(cancelled, false, "Item should not be cancelled.");
+      assert.equal(acceptedAnswerHash, "Answer No 2", "Accepted answer 2 should be accepted.");
 
-      let test = account_one_starting_balance.plus(10);
+      let account_two_ending_balance = await web3.eth.getBalance(accounts[2]);
+      console.log("Balance3 End: " + web3.fromWei(account_two_ending_balance.toNumber()));
 
-      assert.equal(test.toNumber(), account_one_starting_balance.toNumber(), "Testing testing");
-      */
+      assert.equal(account_two_ending_balance.toNumber(), account_two_starting_balance.plus(bounty_amount).toNumber(), "Amount wasn't correctly sent to correct answer owner.");
     });
-
-/*
-    it("should complete whole process", async () => {
-
-      // Get initial balances of first and second account.
-      let account_one = accounts[0];
-      let account_two = accounts[1];
-
-      let bounty_amount = 10;
-      let itemHash = "Item No One";
-
-      let instance = await Task.deployed();
-
-      let balance = await web3.eth.getBalance(account_one);
-      BigNumber account_one_starting_balance = web3.fromWei(balance.toNumber(), "ether");
-      balance = await web3.eth.getBalance(account_two);
-      BigNumber account_two_starting_balance = web3.fromWei(balance.toNumber(), "ether");
-
-      console.log(typeof(account_one_starting_balance))
-      console.log(typeof(account_two_starting_balance))
-
-      let estGasCost = await instance.makeTask.estimateGas(itemHash, {value: web3.toWei(bounty_amount, 'ether'), from: account_one});
-      console.log('Estimated Gas cost: ' + estGasCost);
-      console.log('Gas Price: ' + web3.fromWei(web3.eth.gasPrice));
-      let hash = await instance.makeTask.sendTransaction(itemHash, {value: web3.toWei(bounty_amount, 'ether'), from: account_one});
-
-      const tx = await web3.eth.getTransaction(hash);
-      const receipt = await web3.eth.getTransactionReceipt(hash);
-      const gasCost = tx.gasPrice.mul(receipt.gasUsed);
-
-      console.log('Tx Gas Price: ' + web3.fromWei(tx.gasPrice));
-      console.log('Gas Cost: ' + web3.fromWei(gasCost))
-
-      balance = await web3.eth.getBalance(account_one);
-      let account_one_ending_balance = web3.fromWei(balance.toNumber(), "ether");
-      balance = await web3.eth.getBalance(account_two);
-      let account_two_ending_balance = web3.fromWei(balance.toNumber(), "ether");
-
-      assert.equal(account_one_ending_balance, account_one_starting_balance.plus(web3.fromWei(gasCost).minus(bounty_amount)), "Amount wasn't correctly taken from the sender");
-      assert.equal(account_two_ending_balance, account_two_starting_balance.plus(bounty_amount), "Amount wasn't correctly sent to the receiver");
-
-    });
-    */
-    /*
-    it("should revert.", async () => {
-      let instance = await Task.deployed();
-
-      try {
-        await instance.getTask(99);
-        assert.fail('Expected revert not received');
-      } catch (error) {
-        const revertFound = error.message.search('revert') >= 0;
-        assert(revertFound, `Expected "revert", got ${error} instead`);
-      }
-    })
-    */
 })
-/*
-contract('2nd MetaCoin test', async (accounts) => {
-
-  it("should put 10000 MetaCoin in the first account", async () => {
-     let instance = await MetaCoin.deployed();
-     let balance = await instance.getBalance.call(accounts[0]);
-     assert.equal(balance.valueOf(), 10000);
-  })
-
-  it("should call a function that depends on a linked library", async () => {
-    let meta = await MetaCoin.deployed();
-    let outCoinBalance = await meta.getBalance.call(accounts[0]);
-    let metaCoinBalance = outCoinBalance.toNumber();
-    let outCoinBalanceEth = await meta.getBalanceInEth.call(accounts[0]);
-    let metaCoinEthBalance = outCoinBalanceEth.toNumber();
-    assert.equal(metaCoinEthBalance, 2 * metaCoinBalance);
-
-  });
-
-  it("should send coin correctly", async () => {
-
-    // Get initial balances of first and second account.
-    let account_one = accounts[0];
-    let account_two = accounts[1];
-
-    let amount = 10;
-
-
-    let instance = await MetaCoin.deployed();
-    let meta = instance;
-
-    let balance = await meta.getBalance.call(account_one);
-    let account_one_starting_balance = balance.toNumber();
-
-    balance = await meta.getBalance.call(account_two);
-    let account_two_starting_balance = balance.toNumber();
-    await meta.sendCoin(account_two, amount, {from: account_one});
-
-    balance = await meta.getBalance.call(account_one);
-    let account_one_ending_balance = balance.toNumber();
-
-    balance = await meta.getBalance.call(account_two);
-    let account_two_ending_balance = balance.toNumber();
-
-    assert.equal(account_one_ending_balance, account_one_starting_balance - amount, "Amount wasn't correctly taken from the sender");
-    assert.equal(account_two_ending_balance, account_two_starting_balance + amount, "Amount wasn't correctly sent to the receiver");
-  });
-
-})
-*/

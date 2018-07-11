@@ -95,24 +95,5 @@ contract TestTask {
     (answerHash, owner, questionId) = task.getAnswer(taskNo, answerNo);
     Assert.equal(answerHash, "Answer No 1", "Answer hash should match");
   }
-  function testAcceptAnswer() public {
-    uint taskNo = 1;
-    uint answerNo = 1;
-    bool result;
-
-    result = task.acceptAnswer(taskNo, answerNo);
-
-    Assert.equal(result, true, "Accept Answer should return true on complete.");
-
-    bool finalised;
-    bytes32 answerHash;
-
-    (, , , , , finalised, , answerHash) = task.getTask(taskNo);
-
-    Assert.equal(finalised, true, "Task should be finalised.");
-    Assert.equal(answerHash, "Answer No 1", "Answer No 1 should be accepted answer.");
-  }
-
-
   // Accept answer test no task, already accepted, non-owner, bounty transfer
 }

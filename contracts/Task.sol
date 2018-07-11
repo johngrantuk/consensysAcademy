@@ -118,9 +118,10 @@ contract Task {
     require(_answerId <= t.answerCount);
     t.finalized = true;
     t.acceptedAnswer = t.answers[_answerId];
-    t.acceptedAnswer.owner.send(t.bounty);  // !!!!!!!!! https://ethereum.stackexchange.com/questions/19341/address-send-vs-address-transfer-best-practice-usage
+    t.acceptedAnswer.owner.transfer(t.bounty);
+    //t.acceptedAnswer.owner.send(t.bounty);  // !!!!!!!!! https://ethereum.stackexchange.com/questions/19341/address-send-vs-address-transfer-best-practice-usage
     // emit event??
-    
+
     return true;
   }
 
