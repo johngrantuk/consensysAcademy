@@ -67,6 +67,8 @@ contract Task {
     task.bounty = msg.value;
     task.answerCount = 0;
     taskItems[taskCount] = task;
+    task.finalized = false;
+    task.cancelled = false;
     //tasks[taskCount].roles[MANAGER] = Role({
     //  user: msg.sender,
     //  rated: false,
@@ -86,6 +88,8 @@ contract Task {
 
   //Get Task
   function getTask(uint256 _id) public view returns (bytes32, address, bytes32, uint256, uint256, bool, bool, bytes32) {
+    require(taskCount > 0);
+    require(_id <= taskCount);
     TaskItem storage t = taskItems[_id];
     return (t.specificationHash, t.owner, t.deliverableHash, t.bounty, t.answerCount, t.finalized, t.cancelled, t.acceptedAnswer.answerHash);
   }
@@ -101,7 +105,7 @@ contract Task {
     t.answers[t.answerCount] = answer;
     return t.answerCount;
   }
-  function getAnswerCount(uint256 _itemId) public view returns (uint256) {
+  function getItemAnswerCount(uint256 _itemId) public view returns (uint256) {
     TaskItem storage t = taskItems[_itemId];
     return t.answerCount;
   }
@@ -115,6 +119,7 @@ contract Task {
     TaskItem storage t = taskItems[_itemId];
     require(t.owner == msg.sender);
     require(t.finalized == false);
+    require(t.answerCount > 0);
     require(_answerId <= t.answerCount);
     t.finalized = true;
     t.acceptedAnswer = t.answers[_answerId];
@@ -122,6 +127,17 @@ contract Task {
     //t.acceptedAnswer.owner.send(t.bounty);  // !!!!!!!!! https://ethereum.stackexchange.com/questions/19341/address-send-vs-address-transfer-best-practice-usage
     // emit event??
 
+    return true;
+  }
+  function cancelItem(uint256 _itemId) public returns (bool){
+    require(_itemId <= taskCount);
+    TaskItem storage t = taskItems[_itemId];
+    require(t.finalized == false);
+    require(t.cancelled == false);
+    t.cancelled = true;
+    require(t.owner == msg.sender);
+
+    t.owner.transfer(t.bounty);
     return true;
   }
 

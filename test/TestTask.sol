@@ -40,19 +40,9 @@ contract TestTask {
   function testTaskOwner() public {
 
     uint taskNo = 1;
-
-    bytes32 specificationHash;
     address owner;
-    bytes32 deliverableHash;
-    uint256 bountyAmount;
-    uint256 answerCount;
-    bool finalised;
-    bool cancelled;
-    bytes32 answerHash;
-    uint256 questionId;
 
     (, owner, , , , , , ) = task.getTask(taskNo);
-    //address(this).balance
 
     Assert.equal(this, owner, "Function caller should be the owner.");
   }
@@ -75,7 +65,7 @@ contract TestTask {
   function testAnswerCountOnInitial() public {
     uint taskNo = 1;
     uint expected = 0;
-    Assert.equal(task.getAnswerCount(taskNo), expected, "It should have 0 answers initially.");
+    Assert.equal(task.getItemAnswerCount(taskNo), expected, "It should have 0 answers initially.");
   }
   function testAddAnswer() public {
     uint taskNo = 1;
