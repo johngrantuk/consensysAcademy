@@ -3,6 +3,7 @@ import {Button, Jumbotron, Row, Col } from 'react-bootstrap';
 import uuid from 'uuid';
 const ecp = require('../libs/ecp');
 const itemHelper = require('../libs/itemHelper');
+const ipfsHelper = require('../libs/ipfsHelper');
 import Item from '../../build/contracts/Item.json'
 import getWeb3 from '../utils/getWeb3'
 import Example from './modalAdd';
@@ -18,7 +19,8 @@ export default class Gallery extends React.Component {
       picList: extPicList,
       selectedFile: '',
       noItems: 'Not loaded',
-      items: [{name: 'default'}, {name: 'default2'}]
+      items: [{name: 'default'}, {name: 'default2'}],
+      picLink: 'None'
     }
 
   }
@@ -38,6 +40,10 @@ export default class Gallery extends React.Component {
     .catch(() => {
       console.log('Error finding web3.')
     })
+  }
+  updateLink(Link){
+    console.log('updateLink')
+    this.setState({picLink: Link});
   }
   instantiateItemContract() {
     const contract = require('truffle-contract')
@@ -108,16 +114,19 @@ export default class Gallery extends React.Component {
 
     // reader.onloadend = this.IpfsSavePic(reader)     // reader.result = null
 
-    reader.onloadend = async function() {
+    reader.onloadend = async () => {
       console.log('ONLOADEND')
       console.log(reader.result)
-      await ecp.init();
-
-      await ecp.uploadPic(reader.result);
-
+      //await ecp.init();
+      //await ecp.uploadPic(reader.result);
       // await ecp.stop();
       //const hash = IpfsSavePic(reader);
       //console.log(hash);
+      const hash = await ipfsHelper.uploadPic(reader.result);
+      console.log('Upload Done: ' + hash);
+      this.setState({
+        picLink: 'https://ipfs.io/ipfs/' + hash
+      })
     }
     //const photo = document.getElementById("photo");
     reader.readAsArrayBuffer(e.files[0]); // Read Provided File
@@ -176,6 +185,7 @@ export default class Gallery extends React.Component {
         <Jumbotron>
           <div>
             <h1>Hello, world!</h1>
+            <h2><a href={this.state.picLink} target="_blank">Picture</a></h2>
             <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
             <p><Button bsStyle="primary" onClick={(e) => this.addItem()}>Learn more &raquo;</Button></p>
             <p><input type="file" id="fileInput" onChange={(e) => this.upload(e.target)}/></p>

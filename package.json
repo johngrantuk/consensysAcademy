@@ -52,6 +52,7 @@
     "async": "^2.6.1",
     "dotenv": "^2.0.0",
     "ipfs": "^0.29.3",
+    "ipfs-api": "^22.2.3",
     "openzeppelin-solidity": "1.10.0",
     "react": "^15.6.2",
     "react-bootstrap": "^0.32.1",
