@@ -3,7 +3,7 @@ exports.getItems = async (Web3, ItemContract, Account) => {
 
   console.log('GEtItems:')
 
-  var noItems = await ItemContract.getTaskCount({from: Account});
+  var noItems = await ItemContract.getItemCount({from: Account});
 
   console.log(noItems)
 
@@ -11,7 +11,7 @@ exports.getItems = async (Web3, ItemContract, Account) => {
   var i = 1;
   var itemInfo;
   while(i < noItems.c[0] + 1){
-      itemInfo = await ItemContract.getTask(i);
+      itemInfo = await ItemContract.getItem(i);
       console.log(itemInfo);
       console.log(Web3.toAscii(itemInfo[0]))
       i++;
@@ -23,13 +23,13 @@ exports.getItems = async (Web3, ItemContract, Account) => {
 
 /*
 
-exports.getTasks = async () => {                                                                                                                    // Gets the existing holes/tasks stored on Colony
+exports.getItems = async () => {                                                                                                                    // Gets the existing holes/items stored on Colony
 
   const userAccount = await loader.getAccount(0);
   const userColonyClient = await getNetworkClient(userAccount);
 
-  const count = await userColonyClient.getTaskCount.call();                                                                                         // Get number of tasks deployed
-  // console.log('Number of tasks deployed: ' + count.count);
+  const count = await userColonyClient.getItemCount.call();                                                                                         // Get number of items deployed
+  // console.log('Number of items deployed: ' + count.count);
 
   var holes = [];
 
@@ -40,19 +40,19 @@ exports.getTasks = async () => {                                                
   await ecp.init();
 
   var i = 1;
-  while(i < count.count + 1){                                                                                                                         // Gets each task and pushes to array for GUI use
-    var taskHash = await userColonyClient.getTask.call({ taskId:i });                                                                                 // Gets Task hash
+  while(i < count.count + 1){                                                                                                                         // Gets each item and pushes to array for GUI use
+    var itemHash = await userColonyClient.getItem.call({ itemId:i });                                                                                 // Gets Item hash
 
-    if(taskHash.specificationHash == null){
+    if(itemHash.specificationHash == null){
       // console.log('Weird science...')
       i++;
       continue;
     }
 
-    var taskInfo = await ecp.getTaskSpecification(taskHash.specificationHash);                                                                          // Get IPFS data
-    var roleInfo = await userColonyClient.getTaskRole.call({ taskId: i, role: 'MANAGER' });                                                             // This is the account that recorded hole
+    var itemInfo = await ecp.getItemSpecification(itemHash.specificationHash);                                                                          // Get IPFS data
+    var roleInfo = await userColonyClient.getItemRole.call({ itemId: i, role: 'MANAGER' });                                                             // This is the account that recorded hole
 
-    holes.push({id: i, location: taskInfo.location, comment: taskInfo.comment, subdomain: taskInfo.subdomain, date: taskInfo.date, manager: roleInfo.address, isRepaired: taskInfo.isRepaired, isConfirmed: taskInfo.isConfirmed, rating: taskInfo.rating });
+    holes.push({id: i, location: itemInfo.location, comment: itemInfo.comment, subdomain: itemInfo.subdomain, date: itemInfo.date, manager: roleInfo.address, isRepaired: itemInfo.isRepaired, isConfirmed: itemInfo.isConfirmed, rating: itemInfo.rating });
     i++;
   }
 

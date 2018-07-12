@@ -1,28 +1,11 @@
-/*
-  This file is part of The Colony Network.
-
-  The Colony Network is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  The Colony Network is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with The Colony Network. If not, see <http://www.gnu.org/licenses/>.
-*/
-
 pragma solidity ^0.4.23;
 
-contract Task {
+contract Item {
 
-  event TaskAdded(uint256 indexed id);
+  event ItemAdded(uint256 indexed id);
 
-  mapping (uint256 => TaskItem) taskItems;
-  uint256 taskCount;
+  mapping (uint256 => ItemStruct) itemItems;
+  uint256 itemCount;
 
   struct AnswerItem {
     bytes32 answerHash;
@@ -30,7 +13,7 @@ contract Task {
     uint256 questionId;
   }
 
-  struct TaskItem {
+  struct ItemStruct {
     bytes32 specificationHash;
     address owner;
     bytes32 deliverableHash;
@@ -48,53 +31,53 @@ contract Task {
 
     // TODO switch this mapping to a uint8 when all role instances are uint8-s specifically ColonyFunding source
     // mapping (uint256 => Role) roles;
-    // Maps a token to the sum of all payouts of it for this task
+    // Maps a token to the sum of all payouts of it for this item
     mapping (address => uint256) totalPayouts;
-    // Maps task role ids (0,1,2..) to a token amount to be paid on task completion
+    // Maps item role ids (0,1,2..) to a token amount to be paid on item completion
     mapping (uint256 => mapping (address => uint256)) payouts;
     mapping (uint256 => AnswerItem) answers;
     uint256 answerCount;
     AnswerItem acceptedAnswer;
   }
 
-  function makeTask(bytes32 _specificationHash) public payable returns (uint256)
+  function makeItem(bytes32 _specificationHash) public payable returns (uint256)
   {
-    taskCount += 1;
+    itemCount += 1;
 
-    TaskItem memory task;
-    task.specificationHash = _specificationHash;
-    task.owner = msg.sender;
-    task.bounty = msg.value;
-    task.answerCount = 0;
-    taskItems[taskCount] = task;
-    task.finalized = false;
-    task.cancelled = false;
-    //tasks[taskCount].roles[MANAGER] = Role({
+    ItemStruct memory item;
+    item.specificationHash = _specificationHash;
+    item.owner = msg.sender;
+    item.bounty = msg.value;
+    item.answerCount = 0;
+    itemItems[itemCount] = item;
+    item.finalized = false;
+    item.cancelled = false;
+    //items[itemCount].roles[MANAGER] = Role({
     //  user: msg.sender,
     //  rated: false,
     //  rating: 0
     //});
-    emit TaskAdded(taskCount);
-    return taskCount;
+    emit ItemAdded(itemCount);
+    return itemCount;
   }
 
-  function getTaskCount() public view returns (uint256) {
-    return taskCount;
+  function getItemCount() public view returns (uint256) {
+    return itemCount;
   }
 
-  // Submit info to Task
+  // Submit info to Item
 
-  // Close Task/Payout Bounty
+  // Close Item/Payout Bounty
 
-  //Get Task
-  function getTask(uint256 _id) public view returns (bytes32, address, bytes32, uint256, uint256, bool, bool, bytes32) {
-    require(taskCount > 0);
-    require(_id <= taskCount);
-    TaskItem storage t = taskItems[_id];
+  //Get Item
+  function getItem(uint256 _id) public view returns (bytes32, address, bytes32, uint256, uint256, bool, bool, bytes32) {
+    require(itemCount > 0);
+    require(_id <= itemCount);
+    ItemStruct storage t = itemItems[_id];
     return (t.specificationHash, t.owner, t.deliverableHash, t.bounty, t.answerCount, t.finalized, t.cancelled, t.acceptedAnswer.answerHash);
   }
   function addAnswer(uint256 _itemId, bytes32 _answerHash) public returns (uint256){
-    TaskItem storage t = taskItems[_itemId];
+    ItemStruct storage t = itemItems[_itemId];
 
     t.answerCount += 1;
 
@@ -106,17 +89,17 @@ contract Task {
     return t.answerCount;
   }
   function getItemAnswerCount(uint256 _itemId) public view returns (uint256) {
-    TaskItem storage t = taskItems[_itemId];
+    ItemStruct storage t = itemItems[_itemId];
     return t.answerCount;
   }
   function getAnswer(uint256 _itemId, uint256 _answerId) public view returns (bytes32, address, uint256) {
-    TaskItem storage t = taskItems[_itemId];
+    ItemStruct storage t = itemItems[_itemId];
     AnswerItem memory answer = t.answers[_answerId];
     return (answer.answerHash, answer.owner, answer.questionId);
   }
   function acceptAnswer(uint256 _itemId, uint256 _answerId) public returns (bool) {
-    require(_itemId <= taskCount);
-    TaskItem storage t = taskItems[_itemId];
+    require(_itemId <= itemCount);
+    ItemStruct storage t = itemItems[_itemId];
     require(t.owner == msg.sender);
     require(t.finalized == false);
     require(t.answerCount > 0);
@@ -130,8 +113,8 @@ contract Task {
     return true;
   }
   function cancelItem(uint256 _itemId) public returns (bool){
-    require(_itemId <= taskCount);
-    TaskItem storage t = taskItems[_itemId];
+    require(_itemId <= itemCount);
+    ItemStruct storage t = itemItems[_itemId];
     require(t.finalized == false);
     require(t.cancelled == false);
     t.cancelled = true;

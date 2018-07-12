@@ -1,5 +1,5 @@
 //import expectThrow from 'openzeppelin-solidity/test/helpers/expectThrow';
-const Task = artifacts.require("Task");
+const Item = artifacts.require("Item");
 
 const ExpectThrow = async (promise) => {
       try {
@@ -19,15 +19,15 @@ const ExpectThrow = async (promise) => {
 
 contract('Item Tests', async (accounts) => {
 
-    it("should have 0 task count on deploy.", async () => {
-       let instance = await Task.deployed();
-       let taskCount = await instance.getTaskCount();
-       assert.equal(taskCount.valueOf(), 0, "Initial item count incorrect.");
+    it("should have 0 item count on deploy.", async () => {
+       let instance = await Item.deployed();
+       let itemCount = await instance.getItemCount();
+       assert.equal(itemCount.valueOf(), 0, "Initial item count incorrect.");
     })
 
-    it("get non-existing task should throw.", async () => {
-      let instance = await Task.deployed();
-      ExpectThrow(instance.getTask(99));
+    it("get non-existing item should throw.", async () => {
+      let instance = await Item.deployed();
+      ExpectThrow(instance.getItem(99));
     })
 
     it("should complete whole item/answer process", async () => {
@@ -35,11 +35,11 @@ contract('Item Tests', async (accounts) => {
       let bounty_amount = web3.toWei(1, 'ether');
       let itemHash = "Item Number One";
 
-      let instance = await Task.deployed();
+      let instance = await Item.deployed();
 
       let account_one_starting_balance = await web3.eth.getBalance(accounts[0]);
 
-      let hash = await instance.makeTask.sendTransaction(itemHash, {value: bounty_amount, from: accounts[0]});            // Creates Item
+      let hash = await instance.makeItem.sendTransaction(itemHash, {value: bounty_amount, from: accounts[0]});            // Creates Item
 
       const tx = await web3.eth.getTransaction(hash);
       const receipt = await web3.eth.getTransactionReceipt(hash);                                                           // Calculates used Gas for Create Item
@@ -51,7 +51,7 @@ contract('Item Tests', async (accounts) => {
 
       assert.equal(account_one_ending_balance.toNumber(), account_one_ending_balance_check.toNumber(), "Bounty amount for make item wasn't correctly taken from the creator");
 
-      hash = await instance.getTaskCount.call();
+      hash = await instance.getItemCount.call();
       assert.equal(1, hash.toNumber(), "Should be 1 item created.");
 
       hash = await instance.getItemAnswerCount.call(1);
@@ -71,7 +71,7 @@ contract('Item Tests', async (accounts) => {
 
       hash = await instance.acceptAnswer.sendTransaction(1, 2, {from: accounts[0]});
 
-      hash = await instance.getTask.call(1, {from: accounts[0]});
+      hash = await instance.getItem.call(1, {from: accounts[0]});
       let specificationHash = web3.toAscii(hash[0]).replace(/\0/g, '');
       let owner = hash[1];
       let deliverableHash = hash[2]; // UNUSED
@@ -97,12 +97,12 @@ contract('Item Tests', async (accounts) => {
     });
 
     it("show throw when cancel called on non-item", async () => {
-      let instance = await Task.deployed();
+      let instance = await Item.deployed();
       ExpectThrow(instance.cancelItem.sendTransaction(99, {from: accounts[0]}));
     })
 
     it("should throw when cancel on finalised item", async () => {
-      let instance = await Task.deployed();
+      let instance = await Item.deployed();
       ExpectThrow(instance.cancelItem.sendTransaction(1, {from: accounts[0]}));
     })
 
@@ -111,11 +111,11 @@ contract('Item Tests', async (accounts) => {
       let bounty_amount = web3.toWei(1, 'ether');
       let itemHash = "Item Number One";
 
-      let instance = await Task.deployed();
+      let instance = await Item.deployed();
 
       let account_one_starting_balance = await web3.eth.getBalance(accounts[0]);
 
-      let hash = await instance.makeTask.sendTransaction(itemHash, {value: bounty_amount, from: accounts[0]});            // Creates Item
+      let hash = await instance.makeItem.sendTransaction(itemHash, {value: bounty_amount, from: accounts[0]});            // Creates Item
 
       let tx = await web3.eth.getTransaction(hash);
       let receipt = await web3.eth.getTransactionReceipt(hash);                                                           // Calculates used Gas for Create Item
@@ -142,7 +142,7 @@ contract('Item Tests', async (accounts) => {
 
       assert.equal(account_one_ending_balance.toNumber(), account_one_ending_balance_check.toNumber(), "Bounty wasn't refunded to owner.");
 
-      hash = await instance.getTask.call(2, {from: accounts[0]});
+      hash = await instance.getItem.call(2, {from: accounts[0]});
       let specificationHash = web3.toAscii(hash[0]).replace(/\0/g, '');
       let owner = hash[1];
       let deliverableHash = hash[2]; // UNUSED
@@ -161,7 +161,7 @@ contract('Item Tests', async (accounts) => {
     });
 
     it("should throw when accept called on cancelled item", async () => {
-      let instance = await Task.deployed();
+      let instance = await Item.deployed();
       ExpectThrow(instance.acceptAnswer.sendTransaction(2, 1, {from: accounts[0]}));
     })
 })

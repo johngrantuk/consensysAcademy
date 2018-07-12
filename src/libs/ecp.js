@@ -53,19 +53,19 @@ exports.init = async () => {
   return node.start();
 }
 
-exports.saveTaskSpecification = async (spec) => {
+exports.saveItemSpecification = async (spec) => {
   const data = Buffer.from(JSON.stringify(spec));
   const result = await node.files.add(data);
   return result[0].hash;
 }
 
-exports.getTaskSpecification = async (hash) => {
+exports.getItemSpecification = async (hash) => {
   const buf = await node.files.cat(`/ipfs/${hash}`);
   let spec;
   try {
     spec = JSON.parse(buf.toString());
   } catch (e) {
-    throw new Error(`Could not get task specification for hash ${hash}`);
+    throw new Error(`Could not get item specification for hash ${hash}`);
   }
   return spec;
 }

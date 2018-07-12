@@ -3,7 +3,7 @@ import {Button, Jumbotron, Row, Col } from 'react-bootstrap';
 import uuid from 'uuid';
 const ecp = require('../libs/ecp');
 const itemHelper = require('../libs/itemHelper');
-import Task from '../../build/contracts/Task.json'
+import Item from '../../build/contracts/Item.json'
 import getWeb3 from '../utils/getWeb3'
 import Example from './modalAdd';
 import ItemList from './itemList'
@@ -17,7 +17,7 @@ export default class Gallery extends React.Component {
     this.state = {
       picList: extPicList,
       selectedFile: '',
-      noTasks: 'Not loaded',
+      noItems: 'Not loaded',
       items: [{name: 'default'}, {name: 'default2'}]
     }
 
@@ -33,26 +33,26 @@ export default class Gallery extends React.Component {
       })
 
       // Instantiate contract once web3 provided.
-      this.instantiateTaskContract();
+      this.instantiateItemContract();
     })
     .catch(() => {
       console.log('Error finding web3.')
     })
   }
-  instantiateTaskContract() {
+  instantiateItemContract() {
     const contract = require('truffle-contract')
-    const task = contract(Task)
-    task.setProvider(this.state.web3.currentProvider)
+    const item = contract(Item)
+    item.setProvider(this.state.web3.currentProvider)
 
     // Declaring this for later so we can chain functions on SimpleStorage.
-    var taskInstance
+    var itemInstance
 
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
-      task.deployed().then((instance) => {
-        taskInstance = instance;
-        var event = taskInstance.TaskAdded({_from: this.state.web3.eth.coinbase});
-        //event.watch(this.handleAddTaskEvent(error, result));
+      item.deployed().then((instance) => {
+        itemInstance = instance;
+        var event = itemInstance.ItemAdded({_from: this.state.web3.eth.coinbase});
+        //event.watch(this.handleAddItemEvent(error, result));
 
         event.watch((error, result) => {
             if (!error){
@@ -60,28 +60,28 @@ export default class Gallery extends React.Component {
               console.log(result);
               console.log(result.args.id.c[0])
               this.setState({
-                noTasks: result.args.id.c[0]
+                noItems: result.args.id.c[0]
               })
             }
 
             this.loadItems();
         });
 
-        return taskInstance.getTaskCount({from: accounts[0]})
+        return itemInstance.getItemCount({from: accounts[0]})
       }).then((result) => {
-        console.log('Number of tasks: ' + result);
+        console.log('Number of items: ' + result);
         console.log(result)
-        // Would get all tasks here
+        // Would get all items here
         this.setState({
-          noTasks: result.c[0],
-          contractTask: taskInstance,
+          noItems: result.c[0],
+          contractItem: itemInstance,
           account: accounts[0]
         })
       })
     })
   }
   async loadItems(){                                                                                    // Called from constructor to load all holes from colony
-    const items = await itemHelper.getItems(this.state.web3, this.state.contractTask, this.state.account);
+    const items = await itemHelper.getItems(this.state.web3, this.state.contractItem, this.state.account);
     this.setState({
       items: items
     });
@@ -122,13 +122,13 @@ export default class Gallery extends React.Component {
     //const photo = document.getElementById("photo");
     reader.readAsArrayBuffer(e.files[0]); // Read Provided File
   }
-  addTask = () => {
-    const contract = this.state.contractTask;
+  addItem = () => {
+    const contract = this.state.contractItem;
     const account = this.state.account;
 
     var value = "Johns Test";
 
-    contract.makeTask(value, {from: account})
+    contract.makeItem(value, {from: account})
     .then(result => {
       console.log('Add result:')
       console.log(result)
@@ -137,7 +137,7 @@ export default class Gallery extends React.Component {
   async IpfsSave(Info){
     await ecp.init();
 
-    const specificationHash = await ecp.saveTaskSpecification(Info);
+    const specificationHash = await ecp.saveItemSpecification(Info);
 
     extPicList.concat(specificationHash);
 
@@ -147,7 +147,7 @@ export default class Gallery extends React.Component {
     });
 
 
-    var loadedInfo = await ecp.getTaskSpecification(specificationHash);
+    var loadedInfo = await ecp.getItemSpecification(specificationHash);
 
     console.log(loadedInfo)
 
@@ -177,11 +177,11 @@ export default class Gallery extends React.Component {
           <div>
             <h1>Hello, world!</h1>
             <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-            <p><Button bsStyle="primary" onClick={(e) => this.addTask()}>Learn more &raquo;</Button></p>
+            <p><Button bsStyle="primary" onClick={(e) => this.addItem()}>Learn more &raquo;</Button></p>
             <p><input type="file" id="fileInput" onChange={(e) => this.upload(e.target)}/></p>
-            <p>No tasks: {this.state.noTasks}</p>
+            <p>No items: {this.state.noItems}</p>
             <Example
-              contract={this.state.contractTask}
+              contract={this.state.contractItem}
               account={this.state.account}
               />
           </div>

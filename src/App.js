@@ -17,7 +17,7 @@ class App extends Component {
       web3: null,
       contract: null,
       account: null,
-      noTasks: 'N/A'
+      noItems: 'N/A'
     }
   }
 
@@ -33,7 +33,7 @@ class App extends Component {
 
       // Instantiate contract once web3 provided.
       this.instantiateContract();
-      this.instantiateTaskContract();
+      this.instantiateItemContract();
     })
     .catch(() => {
       console.log('Error finding web3.')
@@ -72,26 +72,26 @@ class App extends Component {
     })
   }
 
-  instantiateTaskContract() {
+  instantiateItemContract() {
     const contract = require('truffle-contract')
-    const task = contract(Task)
-    task.setProvider(this.state.web3.currentProvider)
+    const item = contract(Item)
+    item.setProvider(this.state.web3.currentProvider)
 
     // Declaring this for later so we can chain functions on SimpleStorage.
-    var taskInstance
+    var itemInstance
 
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
       simpleStorage.deployed().then((instance) => {
-        taskInstance = instance
+        itemInstance = instance
 
         // Stores a given value, 5 by default.
-        return taskInstance.getTaskCount({from: accounts[0]})
+        return itemInstance.getItemCount({from: accounts[0]})
       }).then((result) => {
-        console.log('Number of tasks: ' + result);
-        // Would get all tasks here
+        console.log('Number of items: ' + result);
+        // Would get all items here
         return this.setState({
-          noTasks: result
+          noItems: result
         })
       })
     })

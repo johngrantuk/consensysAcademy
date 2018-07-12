@@ -29,7 +29,7 @@ export default class NewItemForm extends React.Component {
     console.log('Info Submitted');
     console.log(this.state.value)
     //this.setState({ show: false });
-    this.props.contract.makeTask(this.state.value, {from: this.props.account})
+    this.props.contract.makeItem(this.state.value, {from: this.props.account})
     .then(result => {
       console.log('Add result:')
       console.log(result)
