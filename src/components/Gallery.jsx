@@ -6,7 +6,7 @@ const itemHelper = require('../libs/itemHelper');
 const ipfsHelper = require('../libs/ipfsHelper');
 import Item from '../../build/contracts/Item.json'
 import getWeb3 from '../utils/getWeb3'
-import Example from './modalAdd';
+import ModalAdd from './modalAdd';
 import ItemList from './itemList'
 
 var extPicList = [];
@@ -190,7 +190,7 @@ export default class Gallery extends React.Component {
             <p><Button bsStyle="primary" onClick={(e) => this.addItem()}>Learn more &raquo;</Button></p>
             <p><input type="file" id="fileInput" onChange={(e) => this.upload(e.target)}/></p>
             <p>No items: {this.state.noItems}</p>
-            <Example
+            <ModalAdd
               contract={this.state.contractItem}
               account={this.state.account}
               />

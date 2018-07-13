@@ -2,7 +2,7 @@ import React from 'react';
 import {Popover, Tooltip, Button, Modal, OverlayTrigger } from 'react-bootstrap';
 import NewItemForm from './newItemForm';
 
-export default class Example extends React.Component {
+export default class ModalAdd extends React.Component {
   constructor(props, context) {
     super(props, context);
 
@@ -43,38 +43,11 @@ export default class Example extends React.Component {
             <Modal.Title>Submit New Job</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <h4>Text in a modal</h4>
-            <p>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </p>
-
-            <h4>Popover in a modal</h4>
-            <p>
-              there is a{' '}
-              <OverlayTrigger overlay={popover}>
-                <a href="#popover">popover</a>
-              </OverlayTrigger>{' '}
-              here
-            </p>
-
-            <h4>Tooltips in a modal</h4>
-            <p>
-              there is a{' '}
-              <OverlayTrigger overlay={tooltip}>
-                <a href="#tooltip">tooltip</a>
-              </OverlayTrigger>{' '}
-              here
-            </p>
-
-            <hr />
             <NewItemForm
               contract={this.props.contract}
               account={this.props.account}
               />
           </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={this.handleClose}>Close</Button>
-          </Modal.Footer>
         </Modal>
       </div>
     );
