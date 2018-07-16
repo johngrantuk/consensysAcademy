@@ -14,10 +14,16 @@ import bs58 from 'bs58';
  * @returns {Multihash}
  */
 export function getBytes32FromMultiash(multihash) {
+
   const decoded = bs58.decode(multihash);
 
+  let digest = new Buffer(decoded.slice(2)).toString('hex');
+  digest = '0x' + digest;
+
   return {
-    digest: `0x${decoded.slice(2).toString('hex')}`,
+    //digest: `0x${decoded.slice(2).toString('hex')}`,
+    //digest: '0x{new Buffer(decoded).toString('hex')}',
+    digest: digest,
     hashFunction: decoded[0],
     size: decoded[1],
   };
@@ -29,8 +35,8 @@ export function getBytes32FromMultiash(multihash) {
  * @param {Multihash} multihash
  * @returns {(string|null)} base58 encoded multihash string
  */
-export function getMultihashFromBytes32(multihash) {
-  const { digest, hashFunction, size } = multihash;
+export function getMultihashFromBytes32(digest, hashFunction, size) {
+
   if (size === 0) return null;
 
   // cut off leading "0x"

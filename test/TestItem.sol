@@ -19,15 +19,15 @@ contract TestItem {
   }
   function testItStoresAItem() public {
 
-    bytes32 _itemDigest = "ThisIsTheItemDigest";
-    uint8 _HashFunction = 1;
-    uint8 _Size = 1;
+    bytes32 _itemDigest = "ItemDigest";
+    uint8 _HashFunction = 18;
+    uint8 _Size = 32;
     bytes32 _picDigest = "ThisIsThePicDigest";
 
     uint itemId = item.makeItem.value(1 ether)(_itemDigest, _HashFunction, _Size, _picDigest, _HashFunction, _Size);
 
     uint expected = 1;
-    Assert.equal(itemId, expected, "It should have ID 1.");
+    Assert.equal(itemId, expected, "ItemDigest");
   }
 /*
   function testRetreiveItem() public {
@@ -51,7 +51,7 @@ contract TestItem {
     Assert.equal(itemDigest, _itemDigest, "Item digest should match");
     Assert.equal(itemHashFunction, _HashFunction, "itemHashFunction should match");
     Assert.equal(itemSize, _Size, "Item Size should match");
-    
+
     Assert.equal(picDigest, _picDigest, "Pic digest should match");
     Assert.equal(picHashFunction, _HashFunction, "picHashFunction should match");
     Assert.equal(picSize, _Size, "PicSize should match");

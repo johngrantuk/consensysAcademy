@@ -86,13 +86,6 @@ contract Item {
 
     return (t.specificationHash.digest, t.specificationHash.hashFunction, t.specificationHash.size, t.owner, t.bounty, t.finalized, t.cancelled);
   }
-  function getItemSpecHash(uint256 _id) public view returns (bytes32, uint8, uint8) {
-    require(itemCount > 0);
-    require(_id <= itemCount);
-    ItemStruct storage t = itemItems[_id];
-
-    return (t.specificationHash.digest, t.specificationHash.hashFunction, t.specificationHash.size);
-  }
   function getItemPicHash(uint256 _id) public view returns (bytes32, uint8, uint8) {
     require(itemCount > 0);
     require(_id <= itemCount);
