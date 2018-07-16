@@ -13,12 +13,11 @@ export default class ItemList extends React.Component {
                 <Panel.Title componentClass="h3">{this.props.itemInfo.name}</Panel.Title>
               </Panel.Heading>
               <Panel.Body>
-                <img role="presentation" style={{"width" : "100%"}} src="https://animalso.com/wp-content/uploads/2017/01/Golden-Retriever_6.jpg"/>
+                <img role="presentation" style={{"width" : "100%"}} src={this.props.itemInfo.picLink}/>
                 <br/><br/>
-                <strong>Breed</strong>: <span>Golden Retriever</span><br/>
-                <strong>Age</strong>: <span>3</span><br/>
-                <strong>Location</strong>: <span>Warren, MI</span><br/><br/>
-                <Button bsStyle="primary" data-id="0">Adopt</Button>
+                <strong>Bounty</strong>: <span>{this.props.itemInfo.bounty}</span><br/>
+                <strong>Info</strong>: <span></span><br/>
+                <Button bsStyle="primary" data-id="0">ANSWER</Button>
               </Panel.Body>
             </Panel>
           </Col>

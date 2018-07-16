@@ -15,7 +15,16 @@ exports.getItems = async (Web3, ItemContract, Account) => {
       console.log(itemInfo);
       console.log(Web3.toAscii(itemInfo[0]))
       i++;
-      items.push({name: Web3.toAscii(itemInfo[0])})
+      items.push({
+        picLink: 'https://ipfs.io/ipfs/' + Web3.toAscii(itemInfo[8]).replace(/\0/g, ''),
+        infoHash: Web3.toAscii(itemInfo[0]),
+        bounty: itemInfo[3].toNumber(),
+        owner: itemInfo[1],
+        answerCount: itemInfo[4].toNumber(),
+        finalised: itemInfo[5],
+        cancelled: itemInfo[6],
+        acceptedAnswerHash: Web3.toAscii(itemInfo[7]).replace(/\0/g, '')
+      })
   }
 
   return items;

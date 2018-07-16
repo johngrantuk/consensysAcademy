@@ -14,7 +14,8 @@ contract Item {
   }
 
   struct ItemStruct {
-    bytes32 specificationHash;
+    Multihash specificationHash;
+    Multihash picHash;
     address owner;
     bytes32 deliverableHash;
     uint256 bounty;
@@ -40,23 +41,31 @@ contract Item {
     AnswerItem acceptedAnswer;
   }
 
-  function makeItem(bytes32 _specificationHash) public payable returns (uint256)
+  struct Multihash {
+    bytes32 digest;
+    uint8 hashFunction;
+    uint8 size;
+  }
+
+  function makeItem(bytes32 _itemDigest, uint8 _itemHashFunction, uint8 _itemSize, bytes32 _picDigest, uint8 _picHashFunction, uint8 _picSize) public payable returns (uint256)
   {
     itemCount += 1;
 
     ItemStruct memory item;
-    item.specificationHash = _specificationHash;
     item.owner = msg.sender;
     item.bounty = msg.value;
     item.answerCount = 0;
-    itemItems[itemCount] = item;
     item.finalized = false;
     item.cancelled = false;
-    //items[itemCount].roles[MANAGER] = Role({
-    //  user: msg.sender,
-    //  rated: false,
-    //  rating: 0
-    //});
+
+    Multihash memory itemEntry = Multihash(_itemDigest, _itemHashFunction, _itemSize);
+    item.specificationHash = itemEntry;
+
+    Multihash memory picEntry = Multihash(_picDigest, _picHashFunction, _picSize);
+    item.picHash = picEntry;
+
+    itemItems[itemCount] = item;
+
     emit ItemAdded(itemCount);
     return itemCount;
   }
@@ -70,11 +79,26 @@ contract Item {
   // Close Item/Payout Bounty
 
   //Get Item
-  function getItem(uint256 _id) public view returns (bytes32, address, bytes32, uint256, uint256, bool, bool, bytes32) {
+  function getItem(uint256 _id) public view returns (bytes32, uint8, uint8, address, uint256, bool, bool) {
     require(itemCount > 0);
     require(_id <= itemCount);
     ItemStruct storage t = itemItems[_id];
-    return (t.specificationHash, t.owner, t.deliverableHash, t.bounty, t.answerCount, t.finalized, t.cancelled, t.acceptedAnswer.answerHash);
+
+    return (t.specificationHash.digest, t.specificationHash.hashFunction, t.specificationHash.size, t.owner, t.bounty, t.finalized, t.cancelled);
+  }
+  function getItemSpecHash(uint256 _id) public view returns (bytes32, uint8, uint8) {
+    require(itemCount > 0);
+    require(_id <= itemCount);
+    ItemStruct storage t = itemItems[_id];
+
+    return (t.specificationHash.digest, t.specificationHash.hashFunction, t.specificationHash.size);
+  }
+  function getItemPicHash(uint256 _id) public view returns (bytes32, uint8, uint8) {
+    require(itemCount > 0);
+    require(_id <= itemCount);
+    ItemStruct storage t = itemItems[_id];
+
+    return (t.picHash.digest, t.picHash.hashFunction, t.picHash.size);
   }
   function addAnswer(uint256 _itemId, bytes32 _answerHash) public returns (uint256){
     ItemStruct storage t = itemItems[_itemId];

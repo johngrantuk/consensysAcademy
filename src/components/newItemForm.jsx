@@ -1,6 +1,7 @@
 import React from 'react';
-import {FormGroup, ControlLabel, FormControl, HelpBlock, Button } from 'react-bootstrap';
+import {FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
 const ipfsHelper = require('../libs/ipfsHelper');
+import uuid from 'uuid';
 
 export default class NewItemForm extends React.Component {
   constructor(props, context) {
@@ -14,7 +15,7 @@ export default class NewItemForm extends React.Component {
       value: '',
       info: '',
       bounty: '0',
-      picLink: 'https://images.unsplash.com/photo-1475724017904-b712052c192a?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e1527896a195e76507c9b2b49c29e055&auto=format&fit=crop&w=1350&q=80',
+      picHash: 'https://images.unsplash.com/photo-1475724017904-b712052c192a?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e1527896a195e76507c9b2b49c29e055&auto=format&fit=crop&w=1350&q=80',
       ipfsUploaded: false,
       saveToEth: false,
     };
@@ -25,33 +26,45 @@ export default class NewItemForm extends React.Component {
   handleBountyChange(e) {
     this.setState({ bounty: e.target.value });
   }
-  handleSubmit() {
 
-    // Make a promise here that waits for IPFS upload
-    if(this.state.ipfsUploaded){
+  async saveToBlockChain() {
       console.log('Submitting Info To Ethereum: ');
       console.log(this.state.bounty);
       console.log(this.state.info);
-      console.log(this.state.picLink);
+      console.log(this.state.picHash);
 
-      this.props.contract.makeItem(this.state.value, {from: this.props.account})
-      .then(result => {
-        console.log('Add result:')
-        console.log(result)
-        // Once Done
-        this.setState({
-          saveToEth: false,
-          ipfsUploaded: false,
-        })
-      });
+      const itemDetails = {
+        id: uuid.v4(),
+        date: new Date().toLocaleString(),
+        info: this.state.info,
+        bounty: this.state.bounty,
+        picHash: this.state.picHash
+      };
+
+      const infoHash = await ipfsHelper.uploadInfo(itemDetails);
+
+      let hash = await this.props.contract.makeItem.sendTransaction(infoHash, this.state.picHash, {value: this.props.web3.toWei(this.state.bounty, 'ether'), from: this.props.account});
+      console.log('makeItem done:');
+      console.log(hash);
+
+      this.setState({
+        saveToEth: false,
+        ipfsUploaded: false,
+      })
+  }
+
+  handleSubmit() {
+    if(this.state.ipfsUploaded){                        // If picture finished uploading to IPFS save info to Blockchain
+      this.saveToBlockChain();
     }
-    else{
+    else{                                             // If picture still uploading to IPFS then wait for it to finish before saving to Blockchain
       console.log('Waiting for IPFS upload...');
       this.setState({
         saveToEth: true
       })
     }
   }
+
   upload = (e) => {
     // https://gist.github.com/sogoiii/e07ff464c4ff8a6fa9daa0ca927af3cb, https://ether.direct/2017/07/25/uploading-an-image-to-ipfs/
 
@@ -59,39 +72,20 @@ export default class NewItemForm extends React.Component {
       ipfsUploaded: false
     });
 
-    console.log('Upload');
-    console.log(e)
-    console.log(e.files)
-    console.log(e.result)
     const reader = new FileReader();
 
-    reader.onloadend = async () => {
-      console.log('ONLOADEND')
-      console.log(reader.result)
-      //await ecp.init();
-      //await ecp.uploadPic(reader.result);
-      // await ecp.stop();
-      //const hash = IpfsSavePic(reader);
-      //console.log(hash);
-      const hash = await ipfsHelper.uploadPic(reader.result);
+    reader.onloadend = async () => {                                    // Runs once file uploaded to browser
+
+      const hash = await ipfsHelper.uploadPic(reader.result);           // Upload pic to IPFS
       console.log('Upload Done: ' + hash);
       this.setState({
-        picLink: 'https://ipfs.io/ipfs/' + hash,
+        picHash: hash,
         ipfsUploaded: true,
       })
 
-      if(this.state.saveToEth){
-        console.log('Submitting Info To Ethereum: ');
-        console.log(this.state.bounty);
-        console.log(this.state.info);
-        console.log(this.state.picLink);
-
-        // Once Done
-        this.setState({
-          saveToEth: false,
-          ipfsUploaded: false,
-        })
-      }else{
+      if(this.state.saveToEth){                                         // This is true when user clicked SUBMIT but IPFS was still uploading
+        this.saveToBlockChain();
+      }else{                                                            // Waiting for user to click SUBMIT
         console.log('Waiting for submit...')
         this.setState({
           ipfsUploaded: true
@@ -105,12 +99,13 @@ export default class NewItemForm extends React.Component {
   render() {
     return (
       <form>
-        <img role="presentation" style={{"width" : "100%"}} src={this.state.picLink}/>
-        <p><input type="file" id="fileInput" onChange={(e) => this.upload(e.target)}/></p>
-        <label className="btn btn-default btn-file">
+        <img role="presentation" style={{"width" : "100%"}} src={'https://ipfs.io/ipfs/' + this.state.picHash}/>
+        <p></p>
+        <label className="btn btn-primary btn-file">
             Select Item To Upload <input type="file" style={{"display": "none"}} id="fileInput" onChange={(e) => this.upload(e.target)} />
         </label>
-
+        <p></p>
+        <hr></hr>
         <FormGroup
           controlId="formBasicText"
         >

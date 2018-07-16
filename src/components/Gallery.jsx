@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Jumbotron, Row, Col } from 'react-bootstrap';
+import {Button, Jumbotron } from 'react-bootstrap';
 import uuid from 'uuid';
 const ecp = require('../libs/ecp');
 const itemHelper = require('../libs/itemHelper');
@@ -55,6 +55,8 @@ export default class Gallery extends React.Component {
 
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
+      console.log('accounts')
+      console.log(accounts)
       item.deployed().then((instance) => {
         itemInstance = instance;
         var event = itemInstance.ItemAdded({_from: this.state.web3.eth.coinbase});
@@ -178,21 +180,17 @@ export default class Gallery extends React.Component {
   }
 
   render() {
-    const picList = this.state.picList;
-
     return (
       <div>
         <Jumbotron>
           <div>
-            <h1>Hello, world!</h1>
-            <h2><a href={this.state.picLink} target="_blank">Picture</a></h2>
-            <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-            <p><Button bsStyle="primary" onClick={(e) => this.addItem()}>Learn more &raquo;</Button></p>
-            <p><input type="file" id="fileInput" onChange={(e) => this.upload(e.target)}/></p>
+            <h1>What Is It?</h1>
+            <p>DApp that allows user to upload a picture of something they want identified with an associated bounty for the correct answer.</p>
             <p>No items: {this.state.noItems}</p>
             <ModalAdd
               contract={this.state.contractItem}
               account={this.state.account}
+              web3={this.state.web3}
               />
           </div>
         </Jumbotron>

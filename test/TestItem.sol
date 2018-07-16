@@ -19,30 +19,52 @@ contract TestItem {
   }
   function testItStoresAItem() public {
 
-    bytes32 itemHash = "This is a hash";
+    bytes32 _itemDigest = "ThisIsTheItemDigest";
+    uint8 _HashFunction = 1;
+    uint8 _Size = 1;
+    bytes32 _picDigest = "ThisIsThePicDigest";
 
-    uint itemId = item.makeItem.value(1 ether)(itemHash);
+    uint itemId = item.makeItem.value(1 ether)(_itemDigest, _HashFunction, _Size, _picDigest, _HashFunction, _Size);
 
     uint expected = 1;
     Assert.equal(itemId, expected, "It should have ID 1.");
   }
+/*
   function testRetreiveItem() public {
 
-    bytes32 itemHash = "This is a hash";
+    bytes32 _itemDigest = "ThisIsTheItemDigest";
+    uint8 _HashFunction = 1;
+    uint8 _Size = 1;
+    bytes32 _picDigest = "ThisIsThePicDigest";
 
     uint itemNo = 1;
-    bytes32 specificationHash;
+    bytes32 itemDigest;
+    uint8 itemHashFunction;
+    uint8 itemSize = 2;
+    bytes32 picDigest;
+    uint8 picHashFunction;
+    uint8 picSize;
 
-    (specificationHash, , , , , , , ) = item.getItem(itemNo);
+    //(itemDigest, itemHashFunction , itemSize, picDigest, picHashFunction, picSize, , , , , , ,) = item.getItem(itemNo);
+    (itemDigest, itemHashFunction , itemSize) = item.getItemSpecHash(itemNo);
 
-    Assert.equal(specificationHash, itemHash, "retreivedItem should have matching hash.");
+    Assert.equal(itemDigest, _itemDigest, "Item digest should match");
+    Assert.equal(itemHashFunction, _HashFunction, "itemHashFunction should match");
+    Assert.equal(itemSize, _Size, "Item Size should match");
+    
+    Assert.equal(picDigest, _picDigest, "Pic digest should match");
+    Assert.equal(picHashFunction, _HashFunction, "picHashFunction should match");
+    Assert.equal(picSize, _Size, "PicSize should match");
+
+
   }
+
   function testItemOwner() public {
 
     uint itemNo = 1;
     address owner;
 
-    (, owner, , , , , , ) = item.getItem(itemNo);
+    (, owner, , , , , , ,) = item.getItem(itemNo);
 
     Assert.equal(this, owner, "Function caller should be the owner.");
   }
@@ -53,7 +75,7 @@ contract TestItem {
 
     uint256 bountyAmount;
 
-    (, , , bountyAmount, , , , ) = item.getItem(itemNo);
+    (, , , bountyAmount, , , , ,) = item.getItem(itemNo);
     //address(this).balance
 
     Assert.equal(expectedAmount, bountyAmount, "Bounty amount should be 1ether.");
@@ -86,4 +108,5 @@ contract TestItem {
     Assert.equal(answerHash, "Answer No 1", "Answer hash should match");
   }
   // Accept answer test no item, already accepted, non-owner, bounty transfer
+  */
 }

@@ -26,6 +26,11 @@ const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' })
 
 
 */
+exports.uploadInfo = async (info) => {
+  const data = Buffer.from(JSON.stringify(info));
+  const result = await ipfs.files.add(data);
+  return result[0].hash;
+}
 
 exports.uploadPic = async (data) => {
 
