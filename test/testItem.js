@@ -1,6 +1,6 @@
 //import expectThrow from 'openzeppelin-solidity/test/helpers/expectThrow';
 const Item = artifacts.require("Item");
-import { getBytes32FromMultiash, getMultihashFromContractResponse, getMultihashFromBytes32 } from '../src/libs/multihash';
+import { getBytes32FromMultiash, getMultihashFromBytes32 } from '../src/libs/multihash';
 
 const expectThrow = async (promise) => {
       try {

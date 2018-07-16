@@ -1,4 +1,6 @@
-require('babel-register');
+require('babel-register')({
+  ignore: /node_modules\/(?!zeppelin-solidity)/
+});
 require('babel-polyfill');
 
 module.exports = {

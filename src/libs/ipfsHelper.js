@@ -50,3 +50,14 @@ exports.uploadPic = async (data) => {
   })
   */
 }
+
+exports.getItemSpecification = async (hash) => {
+  const buf = await ipfs.files.cat(`/ipfs/${hash}`);
+  let spec;
+  try {
+    spec = JSON.parse(buf.toString());
+  } catch (e) {
+    throw new Error(`Could not get item specification for hash ${hash}`);
+  }
+  return spec;
+}

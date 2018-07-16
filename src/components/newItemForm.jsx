@@ -2,6 +2,7 @@ import React from 'react';
 import {FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
 const ipfsHelper = require('../libs/ipfsHelper');
 import uuid from 'uuid';
+import { getBytes32FromMultiash } from '../libs/multihash';
 
 export default class NewItemForm extends React.Component {
   constructor(props, context) {
@@ -15,7 +16,8 @@ export default class NewItemForm extends React.Component {
       value: '',
       info: '',
       bounty: '0',
-      picHash: 'https://images.unsplash.com/photo-1475724017904-b712052c192a?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e1527896a195e76507c9b2b49c29e055&auto=format&fit=crop&w=1350&q=80',
+      picHash: '',
+      picLink: 'https://images.unsplash.com/photo-1475724017904-b712052c192a?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e1527896a195e76507c9b2b49c29e055&auto=format&fit=crop&w=1350&q=80',
       ipfsUploaded: false,
       saveToEth: false,
     };
@@ -43,7 +45,11 @@ export default class NewItemForm extends React.Component {
 
       const infoHash = await ipfsHelper.uploadInfo(itemDetails);
 
-      let hash = await this.props.contract.makeItem.sendTransaction(infoHash, this.state.picHash, {value: this.props.web3.toWei(this.state.bounty, 'ether'), from: this.props.account});
+      let itemMultiHash = getBytes32FromMultiash(infoHash);
+      let picMultiHash = getBytes32FromMultiash(this.state.picHash);
+      let hash = await this.props.contract.makeItem.sendTransaction(itemMultiHash.digest, itemMultiHash.hashFunction, itemMultiHash.size, picMultiHash.digest, picMultiHash.hashFunction, picMultiHash.size, {value: this.props.web3.toWei(this.state.bounty, 'ether'), from: this.props.account});
+
+      //let hash = await this.props.contract.makeItem.sendTransaction(infoHash, this.state.picHash, {value: this.props.web3.toWei(this.state.bounty, 'ether'), from: this.props.account});
       console.log('makeItem done:');
       console.log(hash);
 
@@ -80,6 +86,7 @@ export default class NewItemForm extends React.Component {
       console.log('Upload Done: ' + hash);
       this.setState({
         picHash: hash,
+        picLink: 'https://ipfs.io/ipfs/' + hash,
         ipfsUploaded: true,
       })
 
@@ -99,7 +106,7 @@ export default class NewItemForm extends React.Component {
   render() {
     return (
       <form>
-        <img role="presentation" style={{"width" : "100%"}} src={'https://ipfs.io/ipfs/' + this.state.picHash}/>
+        <img role="presentation" style={{"width" : "100%"}} src={this.state.picLink}/>
         <p></p>
         <label className="btn btn-primary btn-file">
             Select Item To Upload <input type="file" style={{"display": "none"}} id="fileInput" onChange={(e) => this.upload(e.target)} />

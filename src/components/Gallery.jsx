@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Jumbotron } from 'react-bootstrap';
+import { Jumbotron } from 'react-bootstrap';
 import uuid from 'uuid';
 const ecp = require('../libs/ecp');
 const itemHelper = require('../libs/itemHelper');
@@ -55,8 +55,6 @@ export default class Gallery extends React.Component {
 
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
-      console.log('accounts')
-      console.log(accounts)
       item.deployed().then((instance) => {
         itemInstance = instance;
         var event = itemInstance.ItemAdded({_from: this.state.web3.eth.coinbase});
@@ -64,9 +62,8 @@ export default class Gallery extends React.Component {
 
         event.watch((error, result) => {
             if (!error){
-              console.log('TASK ADDED!')
-              console.log(result);
-              console.log(result.args.id.c[0])
+              // console.log(result);
+              // console.log(result.args.id.c[0])
               this.setState({
                 noItems: result.args.id.c[0]
               })
@@ -77,8 +74,8 @@ export default class Gallery extends React.Component {
 
         return itemInstance.getItemCount({from: accounts[0]})
       }).then((result) => {
-        console.log('Number of items: ' + result);
-        console.log(result)
+        // console.log('Number of items: ' + result);
+        // console.log(result)
         // Would get all items here
         this.setState({
           noItems: result.c[0],
