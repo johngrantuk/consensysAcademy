@@ -8,7 +8,7 @@ contract Item {
   uint256 itemCount;
 
   struct AnswerItem {
-    bytes32 answerHash;
+    Multihash answerHash;
     address owner;
     uint256 questionId;
   }
@@ -79,12 +79,12 @@ contract Item {
   // Close Item/Payout Bounty
 
   //Get Item
-  function getItem(uint256 _id) public view returns (bytes32, uint8, uint8, address, uint256, bool, bool) {
+  function getItem(uint256 _id) public view returns (bytes32, uint8, uint8, address, uint256, bool, bool, uint256) {
     require(itemCount > 0);
     require(_id <= itemCount);
     ItemStruct storage t = itemItems[_id];
 
-    return (t.specificationHash.digest, t.specificationHash.hashFunction, t.specificationHash.size, t.owner, t.bounty, t.finalized, t.cancelled);
+    return (t.specificationHash.digest, t.specificationHash.hashFunction, t.specificationHash.size, t.owner, t.bounty, t.finalized, t.cancelled, t.answerCount);
   }
   function getItemPicHash(uint256 _id) public view returns (bytes32, uint8, uint8) {
     require(itemCount > 0);
@@ -93,26 +93,30 @@ contract Item {
 
     return (t.picHash.digest, t.picHash.hashFunction, t.picHash.size);
   }
-  function addAnswer(uint256 _itemId, bytes32 _answerHash) public returns (uint256){
+  function addAnswer(uint256 _itemId, bytes32 _answerDigest, uint8 _answerHashFunction, uint8 _answerSize) public returns (uint256){
     ItemStruct storage t = itemItems[_itemId];
 
     t.answerCount += 1;
 
+    Multihash memory answerEntry = Multihash(_answerDigest, _answerHashFunction, _answerSize);
+
     AnswerItem memory answer;
-    answer.answerHash = _answerHash;
+    answer.answerHash = answerEntry;
     answer.owner = msg.sender;
     answer.questionId = t.answerCount;
+
     t.answers[t.answerCount] = answer;
+
     return t.answerCount;
   }
   function getItemAnswerCount(uint256 _itemId) public view returns (uint256) {
     ItemStruct storage t = itemItems[_itemId];
     return t.answerCount;
   }
-  function getAnswer(uint256 _itemId, uint256 _answerId) public view returns (bytes32, address, uint256) {
+  function getAnswer(uint256 _itemId, uint256 _answerId) public view returns (bytes32, uint8, uint8, address, uint256) {
     ItemStruct storage t = itemItems[_itemId];
     AnswerItem memory answer = t.answers[_answerId];
-    return (answer.answerHash, answer.owner, answer.questionId);
+    return (answer.answerHash.digest, answer.answerHash.hashFunction, answer.answerHash.size, answer.owner, answer.questionId);
   }
   function acceptAnswer(uint256 _itemId, uint256 _answerId) public returns (bool) {
     require(_itemId <= itemCount);

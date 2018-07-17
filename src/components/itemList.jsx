@@ -9,7 +9,12 @@ export default class ItemList extends React.Component {
       return (
         <div>
           {items.map(item =>
-            <Item itemInfo={item}></Item>
+            <Item
+              itemInfo={item}
+              contract={this.props.contract}
+              account={this.props.account}
+              web3={this.props.web3}
+              />
           )}
         </div>
       );

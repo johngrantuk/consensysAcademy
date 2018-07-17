@@ -76,17 +76,20 @@ export default class Gallery extends React.Component {
       }).then((result) => {
         // console.log('Number of items: ' + result);
         // console.log(result)
-        // Would get all items here
+
         this.setState({
           noItems: result.c[0],
           contractItem: itemInstance,
           account: accounts[0]
         })
+
+        this.loadItems();
       })
     })
   }
   async loadItems(){                                                                                    // Called from constructor to load all holes from colony
-    const items = await itemHelper.getItems(this.state.web3, this.state.contractItem, this.state.account);
+    console.log('loadItems()')
+    const items = await itemHelper.getItems(this.state.contractItem, this.state.account);
     this.setState({
       items: items
     });
@@ -154,7 +157,6 @@ export default class Gallery extends React.Component {
       picList: this.state.picList.concat(specificationHash)
     });
 
-
     var loadedInfo = await ecp.getItemSpecification(specificationHash);
 
     console.log(loadedInfo)
@@ -194,6 +196,9 @@ export default class Gallery extends React.Component {
 
         <ItemList
           items={this.state.items}
+          contract={this.state.contractItem}
+          account={this.state.account}
+          web3={this.state.web3}
           />
 
       </div>

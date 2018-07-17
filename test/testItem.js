@@ -22,8 +22,8 @@ contract('Item Tests', async (accounts) => {
 
     let itemHash = 'QmahqCsAUAw7zMv6P6Ae8PjCTck7taQA6FgGQLnWdKG7U8';
     let pictureHash = 'Qmb4atcgbbN5v4CDJ8nz5QG5L2pgwSTLd3raDrnyhLjnUH';
-    let answer1Hash = 'Qmsalkjfljflfjldfjsdfjwerreoiucv325dnknvkldfjj';
-    let answer2Hash = 'Qmpgjlmplhggh0398420398dssqwdqpwj2409rjghlggbl';
+    let answer1Hash = 'QmahqCsAUAw7zMv6P6Ae8PjCTck7taQA6FgGQLn1z9djWo';
+    let answer2Hash = 'QmahqCsAUAw7zMv6P6Ae8PjCTck7taQA6FgGQLn9UWrx6Y';
 
     let bounty_amount = web3.toWei(1, 'ether');
 
@@ -103,11 +103,39 @@ contract('Item Tests', async (accounts) => {
       expectThrow(instance.acceptAnswer.sendTransaction(1, 0, {from: accounts[0]}));
     });
 
-    it("should have 2 answers", async () => {
+    it("should create 1 answer", async () => {
+      let answerMultiHash = getBytes32FromMultiash(answer1Hash);
+
       let instance = await Item.deployed();
 
-      let hash = await instance.addAnswer.sendTransaction(1, answer1Hash, {from: accounts[1]});
-      hash = await instance.addAnswer.sendTransaction(1, answer2Hash, {from: accounts[2]});
+      let hash = await instance.addAnswer.sendTransaction(1, answerMultiHash.digest, answerMultiHash.hashFunction, answerMultiHash.size, {from: accounts[1]});
+
+      hash = await instance.getItemAnswerCount.call(1);
+      assert.equal(1, hash.toNumber(), "Should be 1 answer created for item.");
+    });
+    it("get answer should have correct information", async () => {
+
+      let instance = await Item.deployed();
+
+      let hash = await instance.getAnswer.call(1, 1, {from: accounts[0]});
+      let answerHashDigest = hash[0];
+      let answerHashfunction = hash[1].toNumber();
+      let answerHashSize = hash[2].toNumber();
+      let answerOwner = hash[3];
+      let itemId = hash[4].toNumber();
+
+      let output = getMultihashFromBytes32(answerHashDigest, answerHashfunction, answerHashSize);
+
+      assert.equal(answer1Hash, output, "answer hash should be same");
+      assert.equal(answerOwner, accounts[1], "Answer owner should be accounts[1]");
+      assert.equal(1, itemId, "ItemId should be 1.")
+    });
+
+    it("should have 2 answers", async () => {
+      let answerMultiHash = getBytes32FromMultiash(answer2Hash);
+      let instance = await Item.deployed();
+
+      let hash = await instance.addAnswer.sendTransaction(1, answerMultiHash.digest, answerMultiHash.hashFunction, answerMultiHash.size, {from: accounts[2]});
 
       hash = await instance.getItemAnswerCount.call(1);
       assert.equal(2, hash.toNumber(), "Should be 2 answers created for item.");
