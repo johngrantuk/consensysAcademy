@@ -3,6 +3,9 @@ pragma solidity ^0.4.23;
 contract Item {
 
   event ItemAdded(uint256 indexed id);
+  event AnswerAdded();
+  event AnswerAccepted();
+  event ItemCancelled();
 
   mapping (uint256 => ItemStruct) itemItems;
   uint256 itemCount;
@@ -106,6 +109,7 @@ contract Item {
     answer.questionId = t.answerCount;
 
     t.answers[t.answerCount] = answer;
+    emit AnswerAdded();
 
     return t.answerCount;
   }
@@ -129,9 +133,17 @@ contract Item {
     t.acceptedAnswer = t.answers[_answerId];
     t.acceptedAnswer.owner.transfer(t.bounty);
     //t.acceptedAnswer.owner.send(t.bounty);  // !!!!!!!!! https://ethereum.stackexchange.com/questions/19341/address-send-vs-address-transfer-best-practice-usage
-    // emit event??
+    emit AnswerAccepted();
 
     return true;
+  }
+  function getAcceptedAnswer(uint256 _itemId) public view returns (bytes32, uint8, uint8) {
+    require(_itemId <= itemCount);
+    ItemStruct storage t = itemItems[_itemId];
+    require(t.answerCount > 0);
+    require(t.finalized == true);
+
+    return (t.acceptedAnswer.answerHash.digest, t.acceptedAnswer.answerHash.hashFunction, t.acceptedAnswer.answerHash.size);
   }
   function cancelItem(uint256 _itemId) public returns (bool){
     require(_itemId <= itemCount);
@@ -142,6 +154,9 @@ contract Item {
     require(t.owner == msg.sender);
 
     t.owner.transfer(t.bounty);
+
+    emit ItemCancelled();
+
     return true;
   }
 

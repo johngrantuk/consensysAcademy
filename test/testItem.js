@@ -178,6 +178,17 @@ contract('Item Tests', async (accounts) => {
       assert.equal(cancelled, false, "Item should not be cancelled.");
     });
 
+    it("finalised item answer should be correct", async () => {
+      let instance = await Item.deployed();
+      let hash = await instance.getAcceptedAnswer.call(1, {from: accounts[0]});
+      let answerHashDigest = hash[0];
+      let answerHashfunction = hash[1].toNumber();
+      let answerHashSize = hash[2].toNumber();
+
+      let answerHash = getMultihashFromBytes32(answerHashDigest, answerHashfunction, answerHashSize);
+      assert.equal(answer2Hash, answerHash, "Answer hash should be same as answer 2.");
+    });
+
     it("should throw when accept called on answer already accepted", async () => {
       let instance = await Item.deployed();
       expectThrow(instance.acceptAnswer.sendTransaction(1, 2, {from: accounts[0]}));

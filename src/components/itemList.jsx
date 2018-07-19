@@ -10,7 +10,7 @@ export default class ItemList extends React.Component {
         <div>
           {items.map(item =>
             <Item
-              key={item.itemNo}
+              key={item.id}
               itemInfo={item}
               contract={this.props.contract}
               account={this.props.account}

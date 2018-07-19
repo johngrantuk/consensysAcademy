@@ -43,6 +43,7 @@ export default class NewAnswerForm extends React.Component {
 
       let answerMultiHash = getBytes32FromMultiash(answerHash);
       await this.props.contract.addAnswer.sendTransaction(this.props.itemNo, answerMultiHash.digest, answerMultiHash.hashFunction, answerMultiHash.size, {from: this.props.account});
+      console.log('Transaction sent.')
   }
 
   async CancelItem(){
@@ -63,12 +64,12 @@ export default class NewAnswerForm extends React.Component {
     const answers = this.props.answers;
 
     let status;
-    if(this.props.itemInfo.owner == this.props.account){
-      status = <Button bsStyle="primary"  onClick={this.handleCancel}>CANCEL</Button>
+    if(this.props.itemInfo.owner === this.props.account){
+      status = <Button bsStyle="primary"  onClick={this.handleCancel}>CANCEL ITEM</Button>
     }else{
       status = <FormGroup controlId="formBasicText">
                 <FormGroup controlId="formControlsTextarea">
-                  <ControlLabel>Answer</ControlLabel>
+                  <ControlLabel>Your Answer</ControlLabel>
                   <FormControl
                     componentClass="textarea"
                     value={this.state.answer}
@@ -87,14 +88,13 @@ export default class NewAnswerForm extends React.Component {
         {answers.map(answer =>
           <Answer
             key={answer.id}
+            itemOwner={this.props.itemInfo.owner}
             answerInfo={answer}
             contract={this.props.contract}
             account={this.props.account}
             />
         )}
-        <hr></hr>
         {status}
-
       </form>
     );
   }

@@ -13,7 +13,18 @@ export default class ModalAnswer extends React.Component {
     this.state = {
       show: false,
       answers: [],
+      answerInfo: ''
     };
+  }
+  componentWillMount() {
+    if(this.props.itemInfo.finalised){
+      this.loadAcceptedAnswer();
+    }
+  }
+
+  async loadAcceptedAnswer() {
+    const answerInfo = await itemHelper.getItemAnswer(this.props.contract, this.props.account, this.props.itemNo);
+    this.setState({answerInfo: answerInfo});
   }
 
   handleClose() {
@@ -26,9 +37,7 @@ export default class ModalAnswer extends React.Component {
   }
 
   async loadAnswers(){                                                                                    // Called from constructor to load all holes from colony
-    console.log('loadAnswers()')
     const answers = await itemHelper.getItemAnswers(this.props.contract, this.props.account, this.props.itemNo);
-    console.log(answers)
     this.setState({
       answers: answers
     });
@@ -40,11 +49,22 @@ export default class ModalAnswer extends React.Component {
     let status;
 
     if(isAnswered){
-      status = <h4>ANSWERED - SHOW ANSWER</h4>
+      status =
+      <div>
+      <h4>ANSWERED</h4>
+      <strong>{this.state.answerInfo.answer}</strong><br/>
+      <strong>{this.state.answerInfo.date}</strong>
+      </div>
     }else{
-      status = <Button bsStyle="primary" onClick={this.handleShow}>
-        VIEW/SUBMIT ANSWER
-      </Button>
+      if(this.props.itemInfo.owner === this.props.account){
+        status = <Button bsStyle="primary" onClick={this.handleShow}>
+          ACCEPT AN ANSWER
+        </Button>
+      }else{
+        status = <Button bsStyle="primary" onClick={this.handleShow}>
+          SUBMIT AN ANSWER
+        </Button>
+      }
     }
 
     return (

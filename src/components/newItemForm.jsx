@@ -30,10 +30,6 @@ export default class NewItemForm extends React.Component {
   }
 
   async saveToBlockChain() {
-      console.log('Submitting Info To Ethereum: ');
-      console.log(this.state.bounty);
-      console.log(this.state.info);
-      console.log(this.state.picHash);
 
       const itemDetails = {
         id: uuid.v4(),
@@ -43,15 +39,19 @@ export default class NewItemForm extends React.Component {
         picHash: this.state.picHash
       };
 
+      console.log('Uploading Item Info to IPFS...')
       const infoHash = await ipfsHelper.uploadInfo(itemDetails);
+
+      console.log('Submitting Info To Ethereum: ');
+      console.log('Bounty:' + this.state.bounty);
+      console.log('Info Hash: ' + infoHash);
+      console.log('Pic Hash: ' + this.state.picHash);
 
       let itemMultiHash = getBytes32FromMultiash(infoHash);
       let picMultiHash = getBytes32FromMultiash(this.state.picHash);
-      let hash = await this.props.contract.makeItem.sendTransaction(itemMultiHash.digest, itemMultiHash.hashFunction, itemMultiHash.size, picMultiHash.digest, picMultiHash.hashFunction, picMultiHash.size, {value: this.props.web3.toWei(this.state.bounty, 'ether'), from: this.props.account});
+      await this.props.contract.makeItem.sendTransaction(itemMultiHash.digest, itemMultiHash.hashFunction, itemMultiHash.size, picMultiHash.digest, picMultiHash.hashFunction, picMultiHash.size, {value: this.props.web3.toWei(this.state.bounty, 'ether'), from: this.props.account});
 
-      //let hash = await this.props.contract.makeItem.sendTransaction(infoHash, this.state.picHash, {value: this.props.web3.toWei(this.state.bounty, 'ether'), from: this.props.account});
-      console.log('makeItem done:');
-      console.log(hash);
+      console.log('Transaction sent.');
 
       this.setState({
         saveToEth: false,
@@ -93,7 +93,7 @@ export default class NewItemForm extends React.Component {
       if(this.state.saveToEth){                                         // This is true when user clicked SUBMIT but IPFS was still uploading
         this.saveToBlockChain();
       }else{                                                            // Waiting for user to click SUBMIT
-        console.log('Waiting for submit...')
+        console.log('Waiting for submit button press...')
         this.setState({
           ipfsUploaded: true
         })

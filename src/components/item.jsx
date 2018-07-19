@@ -1,7 +1,6 @@
 import React from 'react';
 import {Col, Panel } from 'react-bootstrap';
 import ModalAnswer from './modalAnswer';
-import getWeb3 from '../utils/getWeb3'
 
 export default class Item extends React.Component {
 

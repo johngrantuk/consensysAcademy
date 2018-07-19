@@ -18,11 +18,24 @@ export default class Answer extends React.Component {
     }
 
     render() {
+
+      let status;
+      if(this.props.itemOwner === this.props.account){
+        status = <div>
+                  {this.props.answerInfo.date} {this.props.answerInfo.answer}
+                  <Button bsStyle="primary"  onClick={this.handleSubmit}>Accept Answer</Button>
+                  <hr></hr>
+                </div>
+      }else{
+        status = <div>
+                  {this.props.answerInfo.date} {this.props.answerInfo.answer}
+                  <hr></hr>
+                </div>
+      }
+
       return(
         <div>
-          <hr></hr>
-          {this.props.answerInfo.date} {this.props.answerInfo.owner} {this.props.answerInfo.answer}
-          <Button bsStyle="primary"  onClick={this.handleSubmit}>Accept Answer</Button>
+        {status}
         </div>
       );
     }
