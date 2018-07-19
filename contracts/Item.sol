@@ -1,6 +1,10 @@
 pragma solidity ^0.4.23;
 
+import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+
 contract Item {
+
+  using SafeMath for uint256;
 
   event ItemAdded(uint256 indexed id);
   event AnswerAdded();
@@ -24,21 +28,6 @@ contract Item {
     uint256 bounty;
     bool finalized;
     bool cancelled;
-    /*
-    uint256 dueDate;
-    uint256 payoutsWeCannotMake;
-    uint256 potId;
-    uint256 deliverableTimestamp;
-    uint256 domainId;
-    uint256[] skills;
-    */
-
-    // TODO switch this mapping to a uint8 when all role instances are uint8-s specifically ColonyFunding source
-    // mapping (uint256 => Role) roles;
-    // Maps a token to the sum of all payouts of it for this item
-    mapping (address => uint256) totalPayouts;
-    // Maps item role ids (0,1,2..) to a token amount to be paid on item completion
-    mapping (uint256 => mapping (address => uint256)) payouts;
     mapping (uint256 => AnswerItem) answers;
     uint256 answerCount;
     AnswerItem acceptedAnswer;
@@ -49,10 +38,18 @@ contract Item {
     uint8 hashFunction;
     uint8 size;
   }
+  /*
+  Add zeppelin ownable
+  function kill(){
+    if(msg.sender == owner){
+      selfdestruct(owner);
+    }
+  }
+  */
 
   function makeItem(bytes32 _itemDigest, uint8 _itemHashFunction, uint8 _itemSize, bytes32 _picDigest, uint8 _picHashFunction, uint8 _picSize) public payable returns (uint256)
   {
-    itemCount += 1;
+    itemCount = itemCount.add(1);
 
     ItemStruct memory item;
     item.owner = msg.sender;
@@ -77,11 +74,6 @@ contract Item {
     return itemCount;
   }
 
-  // Submit info to Item
-
-  // Close Item/Payout Bounty
-
-  //Get Item
   function getItem(uint256 _id) public view returns (bytes32, uint8, uint8, address, uint256, bool, bool, uint256) {
     require(itemCount > 0);
     require(_id <= itemCount);
@@ -99,7 +91,7 @@ contract Item {
   function addAnswer(uint256 _itemId, bytes32 _answerDigest, uint8 _answerHashFunction, uint8 _answerSize) public returns (uint256){
     ItemStruct storage t = itemItems[_itemId];
 
-    t.answerCount += 1;
+    t.answerCount = t.answerCount.add(1);
 
     Multihash memory answerEntry = Multihash(_answerDigest, _answerHashFunction, _answerSize);
 
