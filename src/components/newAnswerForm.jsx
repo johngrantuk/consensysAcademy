@@ -11,6 +11,7 @@ export default class NewAnswerForm extends React.Component {
 
     this.handleAnswerChange = this.handleAnswerChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
 
     this.state = {
       value: '',
@@ -41,16 +42,43 @@ export default class NewAnswerForm extends React.Component {
       console.log('Answer hash: ' + answerHash)
 
       let answerMultiHash = getBytes32FromMultiash(answerHash);
-      let hash = await this.props.contract.addAnswer.sendTransaction(this.props.itemNo, answerMultiHash.digest, answerMultiHash.hashFunction, answerMultiHash.size, {from: this.props.account});
+      await this.props.contract.addAnswer.sendTransaction(this.props.itemNo, answerMultiHash.digest, answerMultiHash.hashFunction, answerMultiHash.size, {from: this.props.account});
+  }
+
+  async CancelItem(){
+    await this.props.contract.cancelItem.sendTransaction(2, {from: this.props.account});
   }
 
   handleSubmit() {
     this.saveToBlockChain();
   }
 
+  handleCancel() {
+    console.log('Canceling Item')
+    this.CancelItem();
+  }
+
   render() {
 
     const answers = this.props.answers;
+
+    let status;
+    if(this.props.itemInfo.owner == this.props.account){
+      status = <Button bsStyle="primary"  onClick={this.handleCancel}>CANCEL</Button>
+    }else{
+      status = <FormGroup controlId="formBasicText">
+                <FormGroup controlId="formControlsTextarea">
+                  <ControlLabel>Answer</ControlLabel>
+                  <FormControl
+                    componentClass="textarea"
+                    value={this.state.answer}
+                    placeholder="e.g. The lesser spotted butterfly perched on the Orangie Flouer."
+                    onChange={this.handleAnswerChange}
+                  />
+                </FormGroup>
+                <Button bsStyle="primary"  onClick={this.handleSubmit}>Submit Answer</Button>
+              </FormGroup>
+    }
 
     return (
       <form>
@@ -65,18 +93,8 @@ export default class NewAnswerForm extends React.Component {
             />
         )}
         <hr></hr>
-        <FormGroup controlId="formBasicText">
-          <FormGroup controlId="formControlsTextarea">
-            <ControlLabel>Answer</ControlLabel>
-            <FormControl
-              componentClass="textarea"
-              value={this.state.answer}
-              placeholder="e.g. The lesser spotted butterfly perched on the Orangie Flouer."
-              onChange={this.handleAnswerChange}
-            />
-          </FormGroup>
-          <Button bsStyle="primary"  onClick={this.handleSubmit}>Submit Answer</Button>
-        </FormGroup>
+        {status}
+
       </form>
     );
   }

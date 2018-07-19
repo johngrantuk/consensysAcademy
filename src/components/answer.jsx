@@ -1,6 +1,5 @@
 import React from 'react';
-import {Button, Col, Panel } from 'react-bootstrap';
-import ModalAnswer from './modalAnswer';
+import {Button } from 'react-bootstrap';
 
 export default class Answer extends React.Component {
     constructor(props, context) {

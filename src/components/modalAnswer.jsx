@@ -36,18 +36,28 @@ export default class ModalAnswer extends React.Component {
 
   render() {
 
+    const isAnswered = this.props.itemInfo.finalised;
+    let status;
+
+    if(isAnswered){
+      status = <h4>ANSWERED - SHOW ANSWER</h4>
+    }else{
+      status = <Button bsStyle="primary" onClick={this.handleShow}>
+        VIEW/SUBMIT ANSWER
+      </Button>
+    }
+
     return (
       <div>
         <hr></hr>
-        <Button bsStyle="primary" onClick={this.handleShow}>
-          DETAILS
-        </Button>
+        {status}
 
         <Modal show={this.state.show} onHide={this.handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Item Details</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <h3>Owner: {this.props.itemInfo.owner}</h3>
             <NewAnswerForm
               contract={this.props.contract}
               account={this.props.account}

@@ -76,7 +76,7 @@ export default class Gallery extends React.Component {
       }).then((result) => {
         // console.log('Number of items: ' + result);
         // console.log(result)
-
+        console.log('Account - ' + accounts[0])
         this.setState({
           noItems: result.c[0],
           contractItem: itemInstance,
@@ -89,7 +89,7 @@ export default class Gallery extends React.Component {
   }
   async loadItems(){                                                                                    // Called from constructor to load all holes from colony
     console.log('loadItems()')
-    const items = await itemHelper.getItems(this.state.contractItem, this.state.account);
+    const items = await itemHelper.getItems(this.state.web3, this.state.contractItem, this.state.account);
     this.setState({
       items: items
     });

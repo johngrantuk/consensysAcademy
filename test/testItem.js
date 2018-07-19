@@ -146,7 +146,7 @@ contract('Item Tests', async (accounts) => {
       expectThrow(instance.acceptAnswer.sendTransaction(1, 2, {from: accounts[1]}));
     });
 
-    it("should transfer bounty to account 2 after answer accepted", async () => {
+    it("should transfer bounty to account 2 after answer 2 accepted", async () => {
       let instance = await Item.deployed();
 
       let account_two_starting_balance = await web3.eth.getBalance(accounts[2]);
@@ -192,58 +192,65 @@ contract('Item Tests', async (accounts) => {
       let instance = await Item.deployed();
       expectThrow(instance.cancelItem.sendTransaction(1, {from: accounts[0]}));
     })
-/*
-    it("should cancel item and refund bounty", async () => {
 
-      let bounty_amount = web3.toWei(1, 'ether');
-      let itemHash = "Item Number One";
-      let pictureHash = "Picture Hash";
+    it("should throw when cancel item called by non-owner", async () => {
+      let instance = await Item.deployed();
+
+      expectThrow(instance.cancelItem.sendTransaction(2, {from: accounts[1]}));
+    })
+
+    it("item 2 should not be cancelled or finalised", async () => {
+      let instance = await Item.deployed();
+      let itemMultiHash = getBytes32FromMultiash(itemHash);
+      let picMultiHash = getBytes32FromMultiash(pictureHash);
+
+      let hash = await instance.makeItem.sendTransaction(itemMultiHash.digest, itemMultiHash.hashFunction, itemMultiHash.size, picMultiHash.digest, picMultiHash.hashFunction, picMultiHash.size, {value: bounty_amount, from: accounts[0]});
+
+      hash = await instance.getItem.call(2, {from: accounts[0]});
+      let specificationHash = web3.toAscii(hash[0]).replace(/\0/g, '');
+      let specHashDigest = hash[0];
+      let specHashfunction = hash[1].toNumber();
+      let specHashSize = hash[2].toNumber();
+      let owner = hash[3];
+      let bounty = hash[4].toNumber();
+      let finalised = hash[5];
+      let cancelled = hash[6];
+
+      let answerMultiHash = getBytes32FromMultiash(answer1Hash);
+      hash = await instance.addAnswer.sendTransaction(2, answerMultiHash.digest, answerMultiHash.hashFunction, answerMultiHash.size, {from: accounts[2]});
+
+      assert.equal(finalised, false, "Item should not be finalised.");
+      assert.equal(cancelled, false, "Item should not be cancelled.");
+    })
+
+    it("should cancel item 2 and refund bounty", async () => {
 
       let instance = await Item.deployed();
 
       let account_one_starting_balance = await web3.eth.getBalance(accounts[0]);
 
-      let hash = await instance.makeItem.sendTransaction(itemHash, pictureHash, {value: bounty_amount, from: accounts[0]});            // Creates Item
+      let hash = await instance.cancelItem.sendTransaction(2, {from: accounts[0]});
 
       let tx = await web3.eth.getTransaction(hash);
       let receipt = await web3.eth.getTransactionReceipt(hash);                                                           // Calculates used Gas for Create Item
       let gasCost = tx.gasPrice.mul(receipt.gasUsed);
 
       let account_one_ending_balance = await web3.eth.getBalance(accounts[0]);
-      account_one_ending_balance_check = account_one_starting_balance.minus(gasCost);
-      account_one_ending_balance_check = account_one_ending_balance_check.minus(bounty_amount);                           // This is all deductions
-
-      assert.equal(account_one_ending_balance.toNumber(), account_one_ending_balance_check.toNumber(), "Bounty amount for make item wasn't correctly taken from the creator");
-
-      expectThrow(instance.cancelItem.sendTransaction(2, {from: accounts[1]}));                                       // Confirm only owner can cancel item
-
-      hash = await instance.cancelItem.sendTransaction(2, {from: accounts[0]});
-
-      tx = await web3.eth.getTransaction(hash);
-      receipt = await web3.eth.getTransactionReceipt(hash);                                                           // Calculates used Gas for Create Item
-      gasCost = tx.gasPrice.mul(receipt.gasUsed);
-
-      account_one_ending_balance_check = account_one_ending_balance.minus(gasCost);
+      let account_one_ending_balance_check = account_one_starting_balance.minus(gasCost);
       account_one_ending_balance_check = account_one_ending_balance_check.plus(bounty_amount);
-
-      account_one_ending_balance = await web3.eth.getBalance(accounts[0]);
 
       assert.equal(account_one_ending_balance.toNumber(), account_one_ending_balance_check.toNumber(), "Bounty wasn't refunded to owner.");
 
       hash = await instance.getItem.call(2, {from: accounts[0]});
       let specificationHash = web3.toAscii(hash[0]).replace(/\0/g, '');
-      let owner = hash[1];
-      let deliverableHash = hash[2]; // UNUSED
-      let bounty = hash[3].toNumber();
-      let answerCount = hash[4].toNumber();
+      let specHashDigest = hash[0];
+      let specHashfunction = hash[1].toNumber();
+      let specHashSize = hash[2].toNumber();
+      let owner = hash[3];
+      let bounty = hash[4].toNumber();
       let finalised = hash[5];
       let cancelled = hash[6];
-      let acceptedAnswerHash = web3.toAscii(hash[7]).replace(/\0/g, '');
 
-      assert.equal(specificationHash, itemHash, "Item hash wasn't same.");
-      assert.equal(owner, accounts[0], "Item owner not correct.");
-      assert.equal(bounty, bounty_amount, "Item Bounty not correct.");
-      assert.equal(answerCount, 0, "Should be 0 answers.");
       assert.equal(finalised, false, "Item should not be finalised.");
       assert.equal(cancelled, true, "Item should be cancelled.");
     });
@@ -251,6 +258,5 @@ contract('Item Tests', async (accounts) => {
     it("should throw when accept called on cancelled item", async () => {
       let instance = await Item.deployed();
       expectThrow(instance.acceptAnswer.sendTransaction(2, 1, {from: accounts[0]}));
-    })
-    */
+    });
 })

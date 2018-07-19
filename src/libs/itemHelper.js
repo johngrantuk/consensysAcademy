@@ -1,7 +1,7 @@
 import { getMultihashFromBytes32 } from './multihash';
 const ipfsHelper = require('./ipfsHelper');
 
-exports.getItems = async (ItemContract, Account) => {
+exports.getItems = async (Web3, ItemContract, Account) => {
   var noItems = await ItemContract.getItemCount({from: Account});
   console.log(noItems.toNumber())
   console.log(Account)
@@ -36,6 +36,7 @@ exports.getItems = async (ItemContract, Account) => {
         picLink: 'https://ipfs.io/ipfs/' + info.picHash,
         infoHash: specHash,
         bounty: bounty,
+        bountyEth: Web3.fromWei(bounty, 'ether'),
         owner: owner,
         finalised: finalised,
         cancelled: cancelled,
@@ -52,6 +53,20 @@ exports.getItemAnswers = async (ItemContract, Account, ItemNo) => {
   let noAnswers = hash[7].toNumber();
 
   var answers = [];
+
+  if(noAnswers == 0){
+    answers.push({
+      id: 0,
+      itemNo: ItemNo,
+      answerNo: 0,
+      owner: '',
+      date: '',
+      answer: 'No Answers Yet'
+    })
+
+    return answers;
+  }
+
   var i = 1;
   while(i < noAnswers + 1){
     console.log('Getting answer: ' + i);
@@ -60,7 +75,7 @@ exports.getItemAnswers = async (ItemContract, Account, ItemNo) => {
     let answerHashfunction = hash[1].toNumber();
     let answerHashSize = hash[2].toNumber();
     let answerOwner = hash[3];
-    let itemId = hash[4].toNumber();
+    // let itemId = hash[4].toNumber();
 
     let output = getMultihashFromBytes32(answerHashDigest, answerHashfunction, answerHashSize);
 
