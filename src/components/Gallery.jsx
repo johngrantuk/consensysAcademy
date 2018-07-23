@@ -1,10 +1,11 @@
 import React from 'react';
 import { Jumbotron } from 'react-bootstrap';
 const itemHelper = require('../libs/itemHelper');
-import Item from '../../build/contracts/Item.json'
+import Item from '../../build/contracts/Item.json';
 import getWeb3 from '../utils/getWeb3'
 import ModalAdd from './modalAdd';
-import ItemList from './itemList'
+import ItemList from './itemList';
+import Uport from './uport';
 
 export default class Gallery extends React.Component {
   constructor(props) {
@@ -115,13 +116,16 @@ export default class Gallery extends React.Component {
           </div>
         </Jumbotron>
 
+        <div>
         <ItemList
           items={this.state.items}
           contract={this.state.contractItem}
           account={this.state.account}
           web3={this.state.web3}
           />
+        </div>
 
+        <Uport></Uport>
       </div>
     );
   }
