@@ -85,6 +85,7 @@ export default class ModalAnswer extends React.Component {
               noAnswers={this.props.noAnswers}
               itemInfo={this.props.itemInfo}
               answers={this.state.answers}
+              closeModal={this.handleClose}
               />
           </Modal.Body>
         </Modal>

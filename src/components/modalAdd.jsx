@@ -39,6 +39,7 @@ export default class ModalAdd extends React.Component {
               contract={this.props.contract}
               account={this.props.account}
               web3={this.props.web3}
+              closeModal={this.handleClose}
               />
           </Modal.Body>
         </Modal>

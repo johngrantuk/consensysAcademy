@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
+import {FormGroup, ControlLabel, FormControl, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 const ipfsHelper = require('../libs/ipfsHelper');
 import uuid from 'uuid';
 import { getBytes32FromMultiash } from '../libs/multihash';
@@ -73,6 +73,7 @@ export default class NewItemForm extends React.Component {
 
   handleSubmit() {
     this.saveToBlockChainNew(this.state.picData, this.state.info, this.state.bounty, this.props.web3, this.props.account);
+    this.props.closeModal();
     /*
     if(this.state.ipfsUploaded){                        // If picture finished uploading to IPFS save info to Blockchain
       this.saveToBlockChain();
@@ -207,20 +208,37 @@ export default class NewItemForm extends React.Component {
 
   render() {
 
+    const tooltipPicUpload = (
+      <Tooltip id="tooltipPicUpload">
+        <strong>The picture will be uploaded to IPFS</strong>
+      </Tooltip>
+    );
+
+    const tooltipSubmit = (
+      <Tooltip id="tooltipSubmit">
+        <strong>Metamask will ask for confirmation of transaction. Then picture stored to IPFS, Info stored to IPFS then IPFS Hashes Saved To Blockchain. This will can take some time so will be done in background. Item will appear on front page when complete.</strong>
+      </Tooltip>
+    );
+
     let submit;
     if(this.state.picData === 'none'){
       submit = <h3>PLEASE SELECT A PICTURE</h3>
     }else{
-      submit = <Button bsStyle="primary"  onClick={this.handleSubmit}>Submit To Blockchain</Button>
+      submit =
+      <OverlayTrigger placement="right" overlay={tooltipSubmit}>
+        <Button bsStyle="primary"  onClick={this.handleSubmit}>Submit To Blockchain</Button>
+      </OverlayTrigger>
     }
 
     return (
       <form>
         <img role="presentation" style={{"width" : "100%"}} src={this.state.picLink}/>
         <p></p>
-        <label className="btn btn-primary btn-file">
-            Select Picture To Upload <input type="file" style={{"display": "none"}} id="fileInput" onChange={(e) => this.upload(e.target)} />
-        </label>
+        <OverlayTrigger placement="right" overlay={tooltipPicUpload}>
+          <label className="btn btn-primary btn-file">
+              Select Picture To Upload <input type="file" style={{"display": "none"}} id="fileInput" onChange={(e) => this.upload(e.target)} />
+          </label>
+        </OverlayTrigger>
         <p></p>
         <hr></hr>
         <FormGroup

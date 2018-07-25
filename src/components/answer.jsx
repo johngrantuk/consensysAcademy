@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button } from 'react-bootstrap';
+import {Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 
 export default class Answer extends React.Component {
     constructor(props, context) {
@@ -9,6 +9,7 @@ export default class Answer extends React.Component {
 
     handleSubmit() {
       this.acceptOnChain();
+      this.props.closeModal();
     }
 
     async acceptOnChain() {
@@ -19,11 +20,19 @@ export default class Answer extends React.Component {
 
     render() {
 
+      const tooltipAccept = (
+        <Tooltip id="tooltipAccept">
+          <strong>Answer is marked as accepted. Bounty transferred to owner of answer.</strong>
+        </Tooltip>
+      );
+
       let status;
       if(this.props.itemOwner === this.props.account){
         status = <div>
                   {this.props.answerInfo.date} {this.props.answerInfo.answer}
-                  <Button bsStyle="primary"  onClick={this.handleSubmit}>Accept Answer</Button>
+                  <OverlayTrigger placement="right" overlay={tooltipAccept}>
+                    <Button bsStyle="primary"  onClick={this.handleSubmit}>Accept Answer</Button>
+                  </OverlayTrigger>
                   <hr></hr>
                 </div>
       }else{

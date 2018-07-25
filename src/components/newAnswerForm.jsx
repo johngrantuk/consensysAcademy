@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
+import {FormGroup, ControlLabel, FormControl, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 const ipfsHelper = require('../libs/ipfsHelper');
 import uuid from 'uuid';
 import { getBytes32FromMultiash } from '../libs/multihash';
@@ -52,33 +52,53 @@ export default class NewAnswerForm extends React.Component {
 
   handleSubmit() {
     this.saveToBlockChain();
+    this.props.closeModal();
   }
 
   handleCancel() {
     console.log('Canceling Item')
     this.CancelItem();
+    this.props.closeModal();
   }
 
   render() {
+
+    const tooltipAnswer = (
+      <Tooltip id="tooltipAnswer">
+        <strong>Answer stored to IPFS then hash submitted to Blockchain. May take some time so will be done in background.</strong>
+      </Tooltip>
+    );
+
+    const tooltipCancel = (
+      <Tooltip id="tooltipCancel">
+        <strong>Item will be cancelled and Bounty refunded to owner account.</strong>
+      </Tooltip>
+    );
 
     const answers = this.props.answers;
 
     let status;
     if(this.props.itemInfo.owner === this.props.account){
-      status = <Button bsStyle="primary"  onClick={this.handleCancel}>CANCEL ITEM</Button>
+      status =
+      <OverlayTrigger placement="right" overlay={tooltipCancel}>
+        <Button bsStyle="primary"  onClick={this.handleCancel}>CANCEL ITEM</Button>
+      </OverlayTrigger>
     }else{
-      status = <FormGroup controlId="formBasicText">
-                <FormGroup controlId="formControlsTextarea">
-                  <ControlLabel>Your Answer</ControlLabel>
-                  <FormControl
-                    componentClass="textarea"
-                    value={this.state.answer}
-                    placeholder="e.g. The lesser spotted butterfly perched on the Orangie Flouer."
-                    onChange={this.handleAnswerChange}
-                  />
-                </FormGroup>
-                <Button bsStyle="primary"  onClick={this.handleSubmit}>Submit Answer</Button>
-              </FormGroup>
+      status =
+        <FormGroup controlId="formBasicText">
+          <FormGroup controlId="formControlsTextarea">
+            <ControlLabel>Your Answer</ControlLabel>
+            <FormControl
+              componentClass="textarea"
+              value={this.state.answer}
+              placeholder="e.g. The lesser spotted butterfly perched on the Orangie Flouer."
+              onChange={this.handleAnswerChange}
+            />
+          </FormGroup>
+          <OverlayTrigger placement="right" overlay={tooltipAnswer}>
+            <Button bsStyle="primary"  onClick={this.handleSubmit}>Submit Answer</Button>
+          </OverlayTrigger>
+        </FormGroup>
     }
 
     return (
@@ -92,6 +112,7 @@ export default class NewAnswerForm extends React.Component {
             answerInfo={answer}
             contract={this.props.contract}
             account={this.props.account}
+            closeModal={this.props.closeModal}
             />
         )}
         {status}
