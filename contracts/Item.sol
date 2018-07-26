@@ -1,8 +1,9 @@
 pragma solidity ^0.4.23;
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+import { Destructible } from 'openzeppelin-solidity/contracts/lifecycle/Destructible.sol';
 
-contract Item {
+contract Item is Destructible {
 
   using SafeMath for uint256;
 
@@ -150,6 +151,11 @@ contract Item {
     emit ItemCancelled();
 
     return true;
+  }
+
+  function kill(address upgradedOrganisation_) public
+  {
+    destroyAndSend(upgradedOrganisation_);
   }
 
 }

@@ -270,4 +270,20 @@ contract('Item Tests', async (accounts) => {
       let instance = await Item.deployed();
       expectThrow(instance.acceptAnswer.sendTransaction(2, 1, {from: accounts[0]}));
     });
+
+    it("should kill contract and refund", async () => {
+      let instance = await Item.deployed();
+
+      let itemMultiHash = getBytes32FromMultiash(itemHash);
+      let picMultiHash = getBytes32FromMultiash(pictureHash);
+
+      let account_three_starting_balance = await web3.eth.getBalance(accounts[2]);
+
+      let hash = await instance.makeItem.sendTransaction(itemMultiHash.digest, itemMultiHash.hashFunction, itemMultiHash.size, picMultiHash.digest, picMultiHash.hashFunction, picMultiHash.size, {value: bounty_amount, from: accounts[0]});
+
+      await instance.kill(accounts[2]);
+
+      let account_three_ending_balance = await web3.eth.getBalance(accounts[2]);
+      assert.equal(account_three_ending_balance.toNumber(), account_three_starting_balance.plus(bounty_amount).toNumber(), "Kill didn't transfer balance correctly.");
+    });
 })
