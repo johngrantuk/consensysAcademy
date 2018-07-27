@@ -8,31 +8,91 @@ contract ItemUpgradeable is Destructible {
 
   using SafeMath for uint256;
 
-  address public itemStorage;
+  address public itemStorageAddr;
 
   event ItemAdded(uint256 indexed id);
   event AnswerAdded();
   event AnswerAccepted();
   event ItemCancelled();
 
-  function setDataStore(address _itemStorage) public {
-    itemStorage = _itemStorage;
+  function setDataStore(address _itemStorageAddr) public {
+    itemStorageAddr = _itemStorageAddr;
   }
 
   function makeItem(bytes32 _itemDigest, uint8 _itemHashFunction, uint8 _itemSize, bytes32 _picDigest, uint8 _picHashFunction, uint8 _picSize) public payable returns (uint256)
   {
+    // Check bounth and value are same
     uint256 itemCount;
 
-    ItemStorage itemStore = ItemStorage(itemStorage);
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
 
-    itemCount = itemStore.makeItem(msg.sender, msg.value, _itemDigest, _itemHashFunction, _itemSize, _picDigest, _picHashFunction, _picSize);
+    itemCount = itemStore.makeItem.value(msg.value)(msg.sender, msg.value, _itemDigest, _itemHashFunction, _itemSize, _picDigest, _picHashFunction, _picSize);
     emit ItemAdded(itemCount);
     return itemCount;
   }
 
-  function kill(address upgradedOrganisation_) public
+  function getItemCount() public view returns (uint256) {
+
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+
+    return itemStore.getItemCount();
+  }
+
+  function getItem(uint256 _id) public view returns (bytes32, uint8, uint8, address, uint256, bool, bool, uint256) {
+
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+
+    return itemStore.getItem(_id);
+  }
+
+  function getItemAnswerCount(uint256 _itemId) public view returns (uint256) {
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+    return itemStore.getItemAnswerCount(_itemId);
+  }
+
+  function getItemPicHash(uint256 _id) public view returns (bytes32, uint8, uint8) {
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+    return itemStore.getItemPicHash(_id);
+  }
+
+  function addAnswer(uint256 _itemId, bytes32 _answerDigest, uint8 _answerHashFunction, uint8 _answerSize) public returns (uint256){
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+    return itemStore.addAnswer(_itemId, _answerDigest, _answerHashFunction, _answerSize, msg.sender);
+
+  }
+
+  function getAnswer(uint256 _itemId, uint256 _answerId) public view returns (bytes32, uint8, uint8, address, uint256) {
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+    return itemStore.getAnswer(_itemId, _answerId);
+  }
+
+  function acceptAnswer(uint256 _itemId, uint256 _answerId) public returns (bool) {
+
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+    bool result;
+    result = itemStore.acceptAnswer(_itemId, _answerId, msg.sender);
+    emit AnswerAccepted();
+
+    return result;
+  }
+
+  function getAcceptedAnswer(uint256 _itemId) public view returns (bytes32, uint8, uint8) {
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+    return itemStore.getAcceptedAnswer(_itemId);
+  }
+
+  function cancelItem(uint256 _itemId) public returns (bool){
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+    bool result;
+    result = itemStore.cancelItem(_itemId, msg.sender);
+    emit ItemCancelled();
+
+    return result;
+  }
+
+  function kill(address upgradedContract_) public
   {
-    destroyAndSend(upgradedOrganisation_);
+    destroyAndSend(upgradedContract_);
   }
 
 }
