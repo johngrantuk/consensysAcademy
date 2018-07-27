@@ -2,6 +2,8 @@ import React from 'react';
 import { Jumbotron } from 'react-bootstrap';
 const itemHelper = require('../libs/itemHelper');
 import Item from '../../build/contracts/Item.json';
+import ItemUpgradeable from '../../build/contracts/ItemUpgradeable.json';
+import Parent from '../../build/contracts/Parent.json';
 import getWeb3 from '../utils/getWeb3'
 import ModalAdd from './modalAdd';
 import ItemList from './itemList';
@@ -28,10 +30,137 @@ export default class Gallery extends React.Component {
       })
 
       // Instantiate contract once web3 provided.
-      this.instantiateItemContract();
+      //this.instantiateItemContract();
+      this.state.web3.eth.getAccounts((error, accounts) => {
+        this.loadContracts(accounts);
+      });
     })
     .catch(() => {
       console.log('Error finding web3.')
+    })
+  }
+
+  async loadContracts(accounts){
+    const contract = require('truffle-contract');
+    const item = contract(ItemUpgradeable);
+    item.setProvider(this.state.web3.currentProvider);
+
+    const parent = contract(Parent);
+    parent.setProvider(this.state.web3.currentProvider);
+
+    let ItemUpgradeableInstance = await item.deployed();
+    let parentInstance = await parent.deployed();
+
+    this.SetUpEvents(ItemUpgradeableInstance);
+
+    //let accounts = await this.state.web3.eth.getAccounts();
+
+
+    await parentInstance.registerItem.sendTransaction(1, ItemUpgradeableInstance.address, {from: accounts[0]});
+
+    let itemCount = await ItemUpgradeableInstance.getItemCount({from: accounts[0]});
+
+    this.setState({
+      noItems: itemCount.toNumber(),
+      contractItem: ItemUpgradeableInstance,
+      account: accounts[0]
+    })
+
+    this.loadItems();
+  }
+
+  SetUpEvents(itemInstance) {
+    var itemAddedEvent = itemInstance.ItemAdded({_from: this.state.web3.eth.coinbase});
+
+    itemAddedEvent.watch((error, result) => {
+      console.log('ItemAddedEvent')
+      if (!error){
+        this.setState({
+          noItems: result.args.id.c[0]
+        })
+      }
+
+      this.loadItems();
+    });
+
+    var answerAddedEvent = itemInstance.AnswerAdded({_from: this.state.web3.eth.coinbase});
+
+    answerAddedEvent.watch((error, result) => {
+      console.log('AnswerAddedEvent')
+      this.loadItems();
+    });
+
+    var answerAcceptedEvent = itemInstance.AnswerAccepted({_from: this.state.web3.eth.coinbase});
+
+    answerAcceptedEvent.watch((error, result) => {
+      console.log('AnswerAcceptedEvent')
+      this.loadItems();
+    });
+
+    var itemCancelledEvent = itemInstance.ItemCancelled({_from: this.state.web3.eth.coinbase});
+
+    itemCancelledEvent.watch((error, result) => {
+      console.log('ItemCancelledEvent')
+      this.loadItems();
+    });
+  }
+
+  instantiateContracts() {
+    const contract = require('truffle-contract');
+    const item = contract(ItemUpgradeable);
+    item.setProvider(this.state.web3.currentProvider);
+
+    var itemInstance;
+
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      item.deployed().then((instance) => {
+        itemInstance = instance;
+
+        var itemAddedEvent = itemInstance.ItemAdded({_from: this.state.web3.eth.coinbase});
+
+        itemAddedEvent.watch((error, result) => {
+          console.log('ItemAddedEvent')
+          if (!error){
+            this.setState({
+              noItems: result.args.id.c[0]
+            })
+          }
+
+          this.loadItems();
+        });
+
+        var answerAddedEvent = itemInstance.AnswerAdded({_from: this.state.web3.eth.coinbase});
+
+        answerAddedEvent.watch((error, result) => {
+          console.log('AnswerAddedEvent')
+          this.loadItems();
+        });
+
+        var answerAcceptedEvent = itemInstance.AnswerAccepted({_from: this.state.web3.eth.coinbase});
+
+        answerAcceptedEvent.watch((error, result) => {
+          console.log('AnswerAcceptedEvent')
+          this.loadItems();
+        });
+
+        var itemCancelledEvent = itemInstance.ItemCancelled({_from: this.state.web3.eth.coinbase});
+
+        itemCancelledEvent.watch((error, result) => {
+          console.log('ItemCancelledEvent')
+          this.loadItems();
+        });
+
+        return itemInstance.getItemCount({from: accounts[0]})
+      }).then((result) => {
+
+        this.setState({
+          noItems: result.c[0],
+          contractItem: itemInstance,
+          account: accounts[0]
+        })
+
+        this.loadItems();
+      })
     })
   }
 

@@ -5,8 +5,6 @@ var Parent = artifacts.require("./Parent.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(Item);
-
-  //deployer.deploy(ItemStorage);
   deployer.deploy(ItemUpgradeable);
   deployer.deploy(Parent);
 };
