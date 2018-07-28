@@ -37,10 +37,24 @@ export default class Gallery extends React.Component {
     })
     .catch(() => {
       console.log('Error finding web3.')
-    })
+    });
   }
 
-  async loadContracts(accounts){
+  checkMetaMask() {
+
+    if (this.state.web3.eth.accounts[0] !== this.state.account) {
+      this.setState({
+        account: this.state.web3.eth.accounts[0]
+      })
+      this.loadItems();
+    }
+
+  }
+
+  async loadContractsOld(accounts){
+
+    setInterval(() => this.checkMetaMask(), 100);
+
     const contract = require('truffle-contract');
     const item = contract(ItemUpgradeable);
     item.setProvider(this.state.web3.currentProvider);
@@ -53,9 +67,6 @@ export default class Gallery extends React.Component {
 
     this.SetUpEvents(ItemUpgradeableInstance);
 
-    //let accounts = await this.state.web3.eth.getAccounts();
-
-
     await parentInstance.registerItem.sendTransaction(1, ItemUpgradeableInstance.address, {from: accounts[0]});
 
     let itemCount = await ItemUpgradeableInstance.getItemCount({from: accounts[0]});
@@ -67,6 +78,40 @@ export default class Gallery extends React.Component {
     })
 
     this.loadItems();
+  }
+
+  async loadContracts(accounts){
+
+    setInterval(() => this.checkMetaMask(), 100);
+
+    const contract = require('truffle-contract');
+
+    const parent = contract(Parent);
+    parent.setProvider(this.state.web3.currentProvider);
+
+    let parentInstance = await parent.deployed();
+
+    let itemAddr;
+    itemAddr = await parentInstance.getItemContractAddress.call(1);
+    console.log(itemAddr)
+
+    const item = contract(ItemUpgradeable);
+    item.setProvider(this.state.web3.currentProvider);
+
+    let ItemUpgradeableInstance = await item.at(itemAddr);
+
+    this.SetUpEvents(ItemUpgradeableInstance);
+
+    let itemCount = await ItemUpgradeableInstance.getItemCount({from: accounts[0]});
+
+    this.setState({
+      noItems: itemCount.toNumber(),
+      contractItem: ItemUpgradeableInstance,
+      account: accounts[0]
+    })
+
+    this.loadItems();
+
   }
 
   SetUpEvents(itemInstance) {
@@ -236,6 +281,7 @@ export default class Gallery extends React.Component {
           <div>
             <h1>What Is It?</h1>
             <p>DApp that allows user to upload a picture of something they want identified with an associated bounty for the correct answer.</p>
+            <p>You're currently using MetaMask Account: {this.state.account}</p>
             <p>No items: {this.state.noItems}</p>
             <ModalAdd
               contract={this.state.contractItem}
