@@ -38,7 +38,7 @@ contract ItemUpgradeable is Destructible {
     return itemStore.getItemCount();
   }
 
-  function getItem(uint256 _id) public view returns (bytes32, uint8, uint8, address, uint256, bool, bool, uint256) {
+  function getItem(uint256 _id) public view returns (bytes32, uint8, uint8, address, uint256, bool, bool, uint256, bool) {
 
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
 
@@ -57,8 +57,10 @@ contract ItemUpgradeable is Destructible {
 
   function addAnswer(uint256 _itemId, bytes32 _answerDigest, uint8 _answerHashFunction, uint8 _answerSize) public returns (uint256){
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
-    return itemStore.addAnswer(_itemId, _answerDigest, _answerHashFunction, _answerSize, msg.sender);
-
+    uint256 answerId;
+    answerId = itemStore.addAnswer(_itemId, _answerDigest, _answerHashFunction, _answerSize, msg.sender);
+    emit AnswerAdded();
+    return answerId;
   }
 
   function getAnswer(uint256 _itemId, uint256 _answerId) public view returns (bytes32, uint8, uint8, address, uint256) {
@@ -74,6 +76,11 @@ contract ItemUpgradeable is Destructible {
     emit AnswerAccepted();
 
     return result;
+  }
+
+  function claimBounty(uint256 _itemId) public returns (bool){
+    ItemStorage itemStore = ItemStorage(itemStorageAddr);
+    return itemStore.claimBounty(_itemId, msg.sender);
   }
 
   function getAcceptedAnswer(uint256 _itemId) public view returns (bytes32, uint8, uint8) {

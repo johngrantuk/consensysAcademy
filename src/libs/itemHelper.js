@@ -17,6 +17,7 @@ exports.getItems = async (Web3, ItemContract, Account) => {
       let specHash = getMultihashFromBytes32(specHashDigest, specHashfunction, specHashSize);
       let info = await ipfsHelper.getItemSpecification(specHash);
       let noAnswers = hash[7].toNumber();
+      let isBountyCollected = hash[8];
 
       items.push({
         id: info.id,
@@ -30,7 +31,8 @@ exports.getItems = async (Web3, ItemContract, Account) => {
         owner: owner,
         finalised: finalised,
         cancelled: cancelled,
-        noAnswers: noAnswers
+        noAnswers: noAnswers,
+        isBountyCollected: isBountyCollected
       })
       i++;
   }
@@ -43,7 +45,7 @@ exports.getItemAnswers = async (ItemContract, Account, ItemNo) => {
   let noAnswers = hash[7].toNumber();
   var answers = [];
   var i = 1;
-  
+
   while(i < noAnswers + 1){
     hash = await ItemContract.getAnswer.call(ItemNo, i, {from: Account});
     let answerHashDigest = hash[0];

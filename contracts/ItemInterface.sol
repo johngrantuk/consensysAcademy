@@ -14,5 +14,6 @@ contract ItemInterface
   function getAnswer(uint256 _itemId, uint256 _answerId) public view returns (bytes32, uint8, uint8, address, uint256);
   function acceptAnswer(uint256 _itemId, uint256 _answerId) public returns (bool);
   function getAcceptedAnswer(uint256 _itemId) public view returns (bytes32, uint8, uint8);
+  function claimBounty(uint256 _itemId) public returns (bool);
   function cancelItem(uint256 _itemId) public returns (bool);
 }

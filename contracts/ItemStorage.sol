@@ -3,8 +3,9 @@ pragma solidity ^0.4.23;
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import { Ownable } from 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import { Destructible } from 'openzeppelin-solidity/contracts/lifecycle/Destructible.sol';
+import { PullPayment } from 'openzeppelin-solidity/contracts/payment/PullPayment.sol';
 
-contract ItemStorage is Ownable, Destructible {
+contract ItemStorage is Ownable, Destructible, PullPayment {
 
   using SafeMath for uint256;
   // When adding variables, do not make them public, otherwise all contracts that inherit from
@@ -22,6 +23,8 @@ contract ItemStorage is Ownable, Destructible {
     address owner;
     // Item bounty set & paid by owner
     uint256 bounty;
+    // Indicated if bounty has been isBountyCollected
+    bool isBountyCollected;
     // Indicates if item has been answered
     bool isAnswered;
     // Indicates if item has been cancelled - i.e. bounty refunded to owner
@@ -86,6 +89,11 @@ contract ItemStorage is Ownable, Destructible {
     _;
   }
 
+  modifier bountyNotClaimed(uint256 _itemId){
+    require(items[_itemId].isBountyCollected == false);
+    _;
+  }
+
   function makeItem(address _owner, uint256 _bounty, bytes32 _itemDigest, uint8 _itemHashFunction, uint8 _itemSize, bytes32 _picDigest, uint8 _picHashFunction, uint8 _picSize) public payable returns (uint256)
   {
     // ADD A CHECK THAT BOUNTY AND PAYABLE IS CORRECT
@@ -97,6 +105,7 @@ contract ItemStorage is Ownable, Destructible {
     item.answerCount = 0;
     item.isAnswered = false;
     item.isCancelled = false;
+    item.isBountyCollected = false;
 
     Multihash memory itemEntry = Multihash(_itemDigest, _itemHashFunction, _itemSize);
     item.specificationHash = itemEntry;
@@ -115,10 +124,10 @@ contract ItemStorage is Ownable, Destructible {
 
   function getItem(uint256 _id) public view
   itemExists(_id)
-  returns (bytes32, uint8, uint8, address, uint256, bool, bool, uint256)
+  returns (bytes32, uint8, uint8, address, uint256, bool, bool, uint256, bool)
   {
     Item storage t = items[_id];
-    return (t.specificationHash.digest, t.specificationHash.hashFunction, t.specificationHash.size, t.owner, t.bounty, t.isAnswered, t.isCancelled, t.answerCount);
+    return (t.specificationHash.digest, t.specificationHash.hashFunction, t.specificationHash.size, t.owner, t.bounty, t.isAnswered, t.isCancelled, t.answerCount, t.isBountyCollected);
   }
 
   function getItemPicHash(uint256 _id) public view
@@ -167,6 +176,36 @@ contract ItemStorage is Ownable, Destructible {
   }
 
   function acceptAnswer(uint256 _itemId, uint256 _answerId, address _senderAddr) public
+  itemExists(_itemId)
+  itemNotAnswered(_itemId)
+  answerExists(_itemId, _answerId)
+  isItemOwner(_itemId, _senderAddr)
+  itemNotCancelled(_itemId)
+  returns (bool)
+  {
+    Item storage t = items[_itemId];
+
+    t.isAnswered = true;
+    t.acceptedAnswer = t.answers[_answerId];
+    return true;
+  }
+
+  function claimBounty(uint256 _itemId, address _owner) public
+  itemExists(_itemId)
+  itemAnswered(_itemId)
+  itemNotCancelled(_itemId)
+  bountyNotClaimed(_itemId)
+  returns (bool)
+  {
+    Item storage t = items[_itemId];
+    require(t.acceptedAnswer.owner == _owner);
+    t.isBountyCollected = true;
+    _owner.transfer(t.bounty);
+    return true;
+  }
+
+
+  function acceptAnswerOld(uint256 _itemId, uint256 _answerId, address _senderAddr) public
   itemExists(_itemId)
   itemNotAnswered(_itemId)
   answerExists(_itemId, _answerId)

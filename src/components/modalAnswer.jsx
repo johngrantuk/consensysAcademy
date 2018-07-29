@@ -9,6 +9,7 @@ export default class ModalAnswer extends React.Component {
 
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleBountyCollection = this.handleBountyCollection.bind(this);
 
     this.state = {
       show: false,
@@ -24,6 +25,7 @@ export default class ModalAnswer extends React.Component {
 
   async loadAcceptedAnswer() {
     const answerInfo = await itemHelper.getItemAnswer(this.props.contract, this.props.account, this.props.itemNo);
+    console.log(answerInfo)
     this.setState({answerInfo: answerInfo});
   }
 
@@ -34,6 +36,15 @@ export default class ModalAnswer extends React.Component {
   handleShow() {
     this.loadAnswers();
     this.setState({ show: true });
+  }
+
+  async CollectBounty() {
+    await await this.props.contract.claimBounty.sendTransaction(this.props.itemNo, {from: this.props.account});
+    console.log('Bounty Claimed')
+  }
+
+  handleBountyCollection() {
+    this.CollectBounty();
   }
 
   async loadAnswers(){                                                                                    // Called from constructor to load all holes from colony
@@ -49,17 +60,40 @@ export default class ModalAnswer extends React.Component {
     let status;
 
     if(isAnswered){
-      status =
-      <div>
-      <h4>ANSWERED</h4>
-      <strong>{this.state.answerInfo.answer}</strong><br/>
-      <strong>{this.state.answerInfo.date}</strong>
-      </div>
+      if(this.props.itemInfo.isBountyCollected){
+        status =
+        <div>
+        <h4>ANSWERED</h4>
+        <strong>{this.state.answerInfo.answer}</strong><br/>
+        <strong>{this.state.answerInfo.date}</strong>
+        </div>
+      }else{
+        if(this.props.account === this.state.answerInfo.owner){
+          status =
+          <div>
+          <h4>ANSWERED</h4>
+          <strong>{this.state.answerInfo.answer}</strong><br/>
+          <strong>{this.state.answerInfo.date}</strong><br/>
+          <Button bsStyle="primary" onClick={this.handleBountyCollection}>COLLECT BOUNTY</Button>
+          </div>
+        }else{
+          status =
+          <div>
+          <h4>ANSWERED</h4>
+          <strong>{this.state.answerInfo.answer}</strong><br/>
+          <strong>{this.state.answerInfo.date}</strong>
+          </div>
+        }
+      }
     }else{
       if(this.props.itemInfo.owner === this.props.account){
-        status = <Button bsStyle="primary" onClick={this.handleShow}>
-          ACCEPT AN ANSWER
-        </Button>
+        if(this.props.itemInfo.noAnswers > 0){
+          status = <Button bsStyle="primary" onClick={this.handleShow}>
+            ACCEPT AN ANSWER
+          </Button>
+        }else {
+          status = <h4>Waiting For Answers</h4>
+        }
       }else{
         status = <Button bsStyle="primary" onClick={this.handleShow}>
           SUBMIT AN ANSWER

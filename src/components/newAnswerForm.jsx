@@ -36,6 +36,7 @@ export default class NewAnswerForm extends React.Component {
         id: uuid.v4(),
         date: new Date().toLocaleString(),
         answer: this.state.answer,
+        owner: this.props.account
       };
 
       const answerHash = await ipfsHelper.uploadInfo(answerDetails);

@@ -157,16 +157,47 @@ contract('ItemUpgradeable Tests', async (accounts) => {
       expectThrow(instance.acceptAnswer.sendTransaction(1, 2, {from: accounts[1]}));
     });
 
-    it("should transfer bounty to account 2 after answer 2 accepted", async () => {
+    it("should have correct status when answer accepted", async () => {
+      let instance = await Item.deployed();
+
+      let hash = await instance.acceptAnswer.sendTransaction(1, 2, {from: accounts[0]});
+
+      hash = await instance.getItem.call(1, {from: accounts[0]});
+      let specHashDigest = hash[0];
+      let specHashfunction = hash[1].toNumber();
+      let specHashSize = hash[2].toNumber();
+      let owner = hash[3];
+      let bounty = hash[4].toNumber();
+      let isAnswered = hash[5];
+      let cancelled = hash[6];
+      let answerCount = hash[7].toNumber();
+      let isBountyCollected = hash[8];
+
+      assert.equal(owner, accounts[0], "Item owner not correct.");
+      assert.equal(bounty, bounty_amount, "Item Bounty not correct.");
+      assert.equal(isAnswered, true, "Item should be answered.");
+      assert.equal(cancelled, false, "Item should not be cancelled.");
+      assert.equal(isBountyCollected, false, "Item should not have bounty collected.");
+    });
+
+    // Add try for an incorrect account
+
+    it("should transfer bounty to account 2 when account 2 claims bounty", async () => {
       let instance = await Item.deployed();
 
       let account_two_starting_balance = await web3.eth.getBalance(accounts[2]);
 
-      let hash = await instance.acceptAnswer.sendTransaction(1, 2, {from: accounts[0]});
+      let hash = await instance.claimBounty.sendTransaction(1, {from: accounts[2]});
+      const tx = await web3.eth.getTransaction(hash);
+      const receipt = await web3.eth.getTransactionReceipt(hash);                                                           // Calculates used Gas for Create Item
+      const gasCost = tx.gasPrice.mul(receipt.gasUsed);
 
       let account_two_ending_balance = await web3.eth.getBalance(accounts[2]);
 
-      assert.equal(account_two_ending_balance.toNumber(), account_two_starting_balance.plus(bounty_amount).toNumber(), "Amount wasn't correctly sent to correct answer owner.");
+      let account_two_ending_balance_check = account_two_starting_balance.minus(gasCost);                                 // This is all deductions
+      account_two_ending_balance_check = account_two_ending_balance_check.plus(bounty_amount);
+
+      assert.equal(account_two_ending_balance.toNumber(), account_two_ending_balance_check.toNumber(), "Amount wasn't correctly sent to correct answer owner.");
     });
 
     it("finalised item should all be correct", async () => {
@@ -179,6 +210,8 @@ contract('ItemUpgradeable Tests', async (accounts) => {
       let bounty = hash[4].toNumber();
       let finalised = hash[5];
       let cancelled = hash[6];
+      let answerCount = hash[7].toNumber();
+      let isBountyCollected = hash[8];
 
       let specHash = getMultihashFromBytes32(specHashDigest, specHashfunction, specHashSize);
 
@@ -187,6 +220,7 @@ contract('ItemUpgradeable Tests', async (accounts) => {
       assert.equal(bounty, bounty_amount, "Item Bounty not correct.");
       assert.equal(finalised, true, "Item should be finalised.");
       assert.equal(cancelled, false, "Item should not be cancelled.");
+      assert.equal(isBountyCollected, true, "Item should have bounty claimed.");
     });
 
     it("finalised item answer should be correct", async () => {

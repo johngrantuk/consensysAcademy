@@ -12,34 +12,8 @@ module.exports = function(deployer) {
   */
 
   var itemUpgradeableInstance;
-  var parentInstance;
   /*
-  deployer.deploy(ItemUpgradeable).then(function () {
-    itemUpgradeableInstance = ItemUpgradeable;
-    console.log('ItemUpgradeable deployed.')
-    deployer.deploy(Parent).then(function (){
-      console.log('Parent deployed.');
-      parentInstance = Parent;
-      parentInstance.registerItem.sendTransaction(1, itemUpgradeableInstance.address, {from: accounts[0]}).then(function(){
-        console.log('Item contract registered.')
-      })
-    })
-  })
-  */
-  /*
-  var a, b;
-  deployer.then(function() {
-    // Create a new version of A
-    return ItemUpgradeable.new();
-  }).then(function(instance) {
-    a = instance;
-    // Get the deployed instance of B
-    return Parent.deployed();
-  }).then(function(instance) {
-    b = instance;
-    // Set the new instance of A's address on B via B's setA() function.
-    return b.registerItem(a.address);
-  });
+  Deploys Parent and ItemUpgradeable contracts. Then call registerItem on Parent so that the first upgradeable Item contract is set-up with storage contract.
   */
   deployer.deploy(ItemUpgradeable).then(function (instance) {
     itemUpgradeableInstance = instance;
@@ -47,19 +21,8 @@ module.exports = function(deployer) {
   }).then(function(instance){
     return instance.registerItem.sendTransaction(1, itemUpgradeableInstance.address);
   }).then(function (){
-    console.log('The end?')
+    console.log('ItemUpgradeable set-up as first version with storage.')
     return
   })
 
 };
-
-/*
-var SilverCoin = artifacts.require("./SilverCoin.sol");
-var Banker = artifacts.require("./Banker.sol");
-
-module.exports = function(deployer) {
-    deployer.deploy(SilverCoin).then(function() {
-        return deployer.deploy(Banker, SilverCoin.address);
-    }).then(function() { })
-};
-*/
