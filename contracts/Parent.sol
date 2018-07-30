@@ -32,7 +32,20 @@ contract Parent {
   function upgradeItemContract(bytes32 key_, address newItemAddress) public
   {
     address itemContractAddress = itemContracts[key_];
-    address itemStorage = ItemInterface(itemContractAddress).itemStorage();
+    address itemStorage = ItemInterface(itemContractAddress).itemStorageAddr();
+
+    ItemInterface(newItemAddress).setDataStore(itemStorage);
+
+    ItemInterface(itemContractAddress).kill(newItemAddress);
+    
+    itemContracts[key_] = newItemAddress;
+    emit ItemContractUpgraded(newItemAddress, now);
+  }
+
+  function upgradeItemContractTes(bytes32 key_, address newItemAddress) public
+  {
+    address itemContractAddress = itemContracts[key_];
+    address itemStorage = ItemInterface(itemContractAddress).itemStorageAddr();
     //address itemStorage = itemContractAddress.itemStorage();
 
     ItemInterface(newItemAddress).setDataStore(itemStorage);

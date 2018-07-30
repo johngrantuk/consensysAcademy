@@ -94,9 +94,15 @@ contract ItemStorage is Ownable, Destructible, PullPayment {
     _;
   }
 
-  function makeItem(address _owner, uint256 _bounty, bytes32 _itemDigest, uint8 _itemHashFunction, uint8 _itemSize, bytes32 _picDigest, uint8 _picHashFunction, uint8 _picSize) public payable returns (uint256)
+  modifier bountyEqualsPayable(uint256 _bountyAmount, uint256 _payableAmount){
+    require(_bountyAmount == _payableAmount);
+    _;
+  }
+
+  function makeItem(address _owner, uint256 _bounty, bytes32 _itemDigest, uint8 _itemHashFunction, uint8 _itemSize, bytes32 _picDigest, uint8 _picHashFunction, uint8 _picSize) public payable
+  bountyEqualsPayable(_bounty, msg.value)
+  returns (uint256)
   {
-    // ADD A CHECK THAT BOUNTY AND PAYABLE IS CORRECT
     itemCount = itemCount.add(1);
 
     Item memory item;

@@ -108,11 +108,12 @@ contract('ItemUpgradeable Tests', async (accounts) => {
       assert.equal(pictureHash, output, "pic hash should be same");
 
     });
-
+    /*
     it("should throw when no answers and accepted", async () => {
       let instance = await Item.deployed();
-      expectThrow(instance.acceptAnswer.sendTransaction(1, 0, {from: accounts[0]}));
+      expectThrow(instance.acceptAnswer.sendTransaction(1, 0, accounts[0], {from: accounts[0]}));
     });
+    */
 
     it("should create 1 answer", async () => {
       let answerMultiHash = getBytes32FromMultiash(answer1Hash);
@@ -151,11 +152,12 @@ contract('ItemUpgradeable Tests', async (accounts) => {
       hash = await instance.getItemAnswerCount.call(1);
       assert.equal(2, hash.toNumber(), "Should be 2 answers created for item.");
     });
-
+    /*
     it("should throw when incorrect owner accepts answer", async () => {
       let instance = await Item.deployed();
-      expectThrow(instance.acceptAnswer.sendTransaction(1, 2, {from: accounts[1]}));
+      expectThrow(instance.acceptAnswer.sendTransaction(1, 2, accounts[1], {from: accounts[1]}));
     });
+    */
 
     it("should have correct status when answer accepted", async () => {
       let instance = await Item.deployed();

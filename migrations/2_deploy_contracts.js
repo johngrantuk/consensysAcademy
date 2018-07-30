@@ -1,4 +1,3 @@
-var Item = artifacts.require("./Item.sol");
 var ItemStorage = artifacts.require("./ItemStorage.sol");
 var ItemUpgradeable = artifacts.require("./ItemUpgradeable.sol");
 var Parent = artifacts.require("./Parent.sol");
