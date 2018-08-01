@@ -3,9 +3,8 @@ pragma solidity ^0.4.23;
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import { Ownable } from 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import { Destructible } from 'openzeppelin-solidity/contracts/lifecycle/Destructible.sol';
-import { PullPayment } from 'openzeppelin-solidity/contracts/payment/PullPayment.sol';
 
-contract ItemStorage is Ownable, Destructible, PullPayment {
+contract ItemStorage is Ownable, Destructible {
 
   using SafeMath for uint256;
   // When adding variables, do not make them public, otherwise all contracts that inherit from

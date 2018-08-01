@@ -97,7 +97,7 @@ contract ItemUpgradeable is Destructible {
     return result;
   }
 
-  function kill(address upgradedOrganisation_)
+  function kill(address upgradedOrganisation_) public
   {
     selfdestruct(upgradedOrganisation_);
   }
