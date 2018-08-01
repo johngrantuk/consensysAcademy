@@ -6,25 +6,21 @@ What project does. How to set it up.
 
 ## Running Project
 
-Clone project: ```git clone https://github.com/johngrantuk/colonyHackathon.git```
+Clone project: ```git clone https://github.com/johngrantuk/consensysAcademy.git```
 
-```cd colonyHackathon```
+```cd consensysAcademy```
 
-Then: ```npm install```
+Then: ```npm install``` (this can take a while)
 
-Then: ```npm start```
+Make sure ganache is running: ```ganache-cli```
 
-Make sure the local Colony test network is running. All from the local Colony contract folder:
+Deploy contracts (from project directory): ```truffle migrate```
 
-Run Ganache: ```ganache-cli -d --gasLimit 7000000 --acctKeys ganache-accounts.json --noVMErrorsOnRPCResponse```
+Then start the local dev server: ```npm start```
 
-Deploy Colony contracts:
-```./node_modules/.bin/truffle migrate --compile-all —reset```
+Remember to login with Metamask to Localhost 8545 (get keys from ganache-cli).
 
-Start Truggle Pig:
-``` trufflepig --ganacheKeyFile ganache-accounts.json```
-
-## Team Members and Contact info
+## Contact info
 
 John: @johngrantuk on github, johngrantuk@googlemail.com
 
