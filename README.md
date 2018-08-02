@@ -2,7 +2,11 @@
 
 ## Description
 
-What project does. How to set it up.
+The project name is **What Is It?**. Essentially like a task bounty.
+User takes a picture and uploads it to app with a bounty for correct answer.
+Picture stored on IPFS.
+People can upvote? (think of stack overflow)
+Original poster accepts answer.
 
 ## Running Project
 

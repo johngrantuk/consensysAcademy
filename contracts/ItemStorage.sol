@@ -12,6 +12,7 @@ contract ItemStorage is Ownable, Destructible {
 
   mapping (uint256 => Item) items;
   uint256 itemCount;
+  bool stopped;
 
   struct Item {
     // IPFS hash containing item information
@@ -98,8 +99,24 @@ contract ItemStorage is Ownable, Destructible {
     _;
   }
 
+  modifier stop_if_emergency() {
+    require(!stopped);
+    _;
+  }
+
+  function ItemStorage(){
+    stopped = false;
+  }
+
+  function toggle_active() public
+  onlyOwner()
+  {
+    stopped = !stopped;
+  }
+
   function makeItem(address _owner, uint256 _bounty, bytes32 _itemDigest, uint8 _itemHashFunction, uint8 _itemSize, bytes32 _picDigest, uint8 _picHashFunction, uint8 _picSize) public payable
   bountyEqualsPayable(_bounty, msg.value)
+  stop_if_emergency()
   returns (uint256)
   {
     itemCount = itemCount.add(1);
@@ -145,6 +162,7 @@ contract ItemStorage is Ownable, Destructible {
 
   function addAnswer(uint256 _itemId, bytes32 _answerDigest, uint8 _answerHashFunction, uint8 _answerSize, address _owner) public
   itemExists(_itemId)
+  stop_if_emergency()
   returns (uint256)
   {
     Item storage t = items[_itemId];
@@ -200,29 +218,13 @@ contract ItemStorage is Ownable, Destructible {
   itemAnswered(_itemId)
   itemNotCancelled(_itemId)
   bountyNotClaimed(_itemId)
+  stop_if_emergency()
   returns (bool)
   {
     Item storage t = items[_itemId];
     require(t.acceptedAnswer.owner == _owner);
     t.isBountyCollected = true;
     _owner.transfer(t.bounty);
-    return true;
-  }
-
-
-  function acceptAnswerOld(uint256 _itemId, uint256 _answerId, address _senderAddr) public
-  itemExists(_itemId)
-  itemNotAnswered(_itemId)
-  answerExists(_itemId, _answerId)
-  isItemOwner(_itemId, _senderAddr)
-  returns (bool)
-  {
-    Item storage t = items[_itemId];
-
-    t.isAnswered = true;
-    t.acceptedAnswer = t.answers[_answerId];
-    t.acceptedAnswer.owner.transfer(t.bounty);  // CHANGE TO WITHDRAWAL
-    //t.acceptedAnswer.owner.send(t.bounty);  // !!!!!!!!! https://ethereum.stackexchange.com/questions/19341/address-send-vs-address-transfer-best-practice-usage
     return true;
   }
 
