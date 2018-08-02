@@ -52,6 +52,18 @@ contract Parent is Ownable, Destructible {
     emit ItemContractUpgraded(newItemAddress, now);
   }
 
+  // Uses circuit breaker to pause storage functionality but still allow items to be cancelled and bounty refunded
+  function toggleItemStorageActive(bytes32 key_) public
+  onlyOwner()
+  {
+    address itemContractAddress = itemContracts[key_];
+    address itemStorageAddress = ItemInterface(itemContractAddress).itemStorageAddr();
+
+    ItemStorage itemStore = ItemStorage(itemStorageAddress);
+
+    itemStore.toggle_active();
+  }
+
   function kill(address transferAddress_) public
   {
     destroyAndSend(transferAddress_);

@@ -105,11 +105,11 @@ contract('Parent Tests', async (accounts) => {
       expectThrow(parentInstance.registerItem.sendTransaction(1, ItemUpgradeableInstance.address, {from: accounts[1]}));
     })
 
-    it("should throw when non-owner tries to kill contract", async () => {
-      // Only the owner of Parent can kill it etc
+    it("should throw when storage circuit breaker (toggleItemStorageActive) called by non owner", async () => {
       let parentInstance = await Parent.deployed();
-      expectThrow(parentInstance.kill.sendTransaction(accounts[1], {from: accounts[1]}));
-    })
+      expectThrow(parentInstance.toggleItemStorageActive.sendTransaction(1, {from: accounts[1]}));
+    });
+
 
     it("should kill contract", async () => {
       // Once contract is killed it no longer exists so a function call should fail.
@@ -126,4 +126,6 @@ contract('Parent Tests', async (accounts) => {
       }
       assert.fail(0, 1, 'Expected contract kill');
     })
+
+
 })
