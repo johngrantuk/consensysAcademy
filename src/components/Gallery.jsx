@@ -1,7 +1,6 @@
 import React from 'react';
 import { Jumbotron } from 'react-bootstrap';
 const itemHelper = require('../libs/itemHelper');
-// import Item from '../../build/contracts/Item.json';
 import ItemUpgradeable from '../../build/contracts/ItemUpgradeable.json';
 import Parent from '../../build/contracts/Parent.json';
 import getWeb3 from '../utils/getWeb3'
@@ -11,15 +10,14 @@ import Uport from './uport';
 import Oracle from './oracle';
 import OracleEthPrice from '../../build/contracts/OracleEthPrice.json';
 
-
-
 export default class Gallery extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       noItems: 'Not loaded',
-      items: [{name: 'default'}, {name: 'default2'}],
+      //items: [{name: 'default'}, {name: 'default2'}],
+      items: [],
       uportCredentials: 'No Credentials',
       uportCredentialsName: 'No UPort Info'
     }
@@ -47,7 +45,7 @@ export default class Gallery extends React.Component {
   }
 
   checkMetaMask() {
-
+    // Checks for active MetaMask account info.
     if (this.state.web3.eth.accounts[0] !== this.state.account) {
       this.setState({
         account: this.state.web3.eth.accounts[0]
@@ -57,7 +55,7 @@ export default class Gallery extends React.Component {
   }
 
   handleUportInfo = (UportInfo) => {
-
+    // Use UPort Name for Items/Answers
     console.log('Handle UPort Info');
     console.log(UportInfo.name)
     this.setState({
@@ -67,6 +65,7 @@ export default class Gallery extends React.Component {
   }
 
   async loadContracts(accounts){
+    // Load the contracts
     const contract = require('truffle-contract');
 
     const parent = contract(Parent);
@@ -107,6 +106,8 @@ export default class Gallery extends React.Component {
   }
 
   SetUpItemEvents(itemInstance) {
+    // Set up listening for Blockchain events.
+
     var itemAddedEvent = itemInstance.ItemAdded({_from: this.state.web3.eth.coinbase});
 
     itemAddedEvent.watch((error, result) => {
@@ -142,7 +143,8 @@ export default class Gallery extends React.Component {
     });
   }
 
-  async loadItems(){                                                                                    // Called from constructor to load all holes from colony
+  async loadItems(){
+    // Loads all Items from Blockchain/IPFS
     const items = await itemHelper.getItems(this.state.web3, this.state.contractItem, this.state.account);
     this.setState({
       items: items
@@ -155,9 +157,10 @@ export default class Gallery extends React.Component {
         <Jumbotron>
           <div>
             <h1>What Is It?</h1>
-            <p>DApp that allows user to upload a picture of something they want identified with an associated bounty for the correct answer.</p>
+            <p>Upload A Pictue Of Something You Want Identified</p>
+            <p>Set A Bounty To Encourage People To Answer</p>
             <p>You're currently using MetaMask Account: {this.state.account}</p>
-            <p>No items: {this.state.noItems}</p>
+            <p>No Items To Identified: {this.state.noItems}</p>
             <ModalAdd
               contract={this.state.contractItem}
               account={this.state.account}

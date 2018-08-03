@@ -21,8 +21,7 @@ export default class Uport extends React.Component {
 
   handleUportSignin = () => {
     /*
-    At the moment this is just showing that I can integrate with uPort. When a user clicks Sign In and authenticates with uPort app the user info is shown.
-    In the future using uPort seems like a nice way to authenticate users on a live network.
+    When a user clicks Sign In and authenticates with uPort app the user info is shown. UPort Credential Name will be stored with new Item & Answer if people want to identify themselves.
     */
     uport.requestCredentials({requested: ['name', 'avatar', 'phone', 'country']}).then((credentials) => {
       console.log(credentials)
@@ -58,11 +57,12 @@ export default class Uport extends React.Component {
           <Col sm={12} md={12} lg={12}>
             <Panel>
               <Panel.Heading>
-                <Panel.Title componentClass="h3">UPort Function</Panel.Title>
+                <Panel.Title componentClass="h3">UPort Credentials</Panel.Title>
               </Panel.Heading>
               <Panel.Body>
-                <h4>This demonstrates UPort integration. Click the button to authenticate with UPort (On Rinkeby) then the DApp will display your credentials.</h4>
-                <div><Button bsStyle="primary" onClick={this.handleUportSignin}>UPort Credentials</Button> </div>
+                <p>Click the button to authenticate with UPort (On Rinkeby) then the DApp will display your credentials.</p>
+                <p>New Items & Answers will store your credential name to identify your input.</p>
+                <div><Button bsStyle="primary" onClick={this.handleUportSignin}>Get UPort Credentials</Button> </div>
                 <br/><br/>
                 {uportCredentials}
               </Panel.Body>
@@ -72,30 +72,3 @@ export default class Uport extends React.Component {
     );
   }
 }
-/*
-    import { Connect, SimpleSigner } from 'uport-connect'
-
-    const uport = new Connect('JG\'s new app', {
-      clientId: '2oqjYpdVAREujwR2J6zEYgz9XNvn1jdqNQQ',
-      network: 'rinkeby or ropsten or kovan',
-      signer: SimpleSigner('310f9a80e477daeac5b43889bc174db19e1fdc307fb412402649c8b81e365f4d')
-    })
-
-    // Request credentials to login
-    uport.requestCredentials({
-      requested: ['name', 'phone', 'country'],
-      notifications: true // We want this if we want to recieve credentials
-    })
-    .then((credentials) => {
-      // Do something
-    })
-
-    // Attest specific credentials
-    uport.attestCredentials({
-      sub: THE_RECEIVING_UPORT_ADDRESS,
-      claim: {
-        CREDENTIAL_NAME: CREDENTIAL_VALUE
-      },
-      exp: new Date().getTime() + 30 * 24 * 60 * 60 * 1000, // 30 days from now
-    })
-    */

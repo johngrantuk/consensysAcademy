@@ -39,6 +39,7 @@ export default class ModalAnswer extends React.Component {
   }
 
   async CollectBounty() {
+    // Called by accepted answer owner to collect Bounty
     await await this.props.contract.claimBounty.sendTransaction(this.props.itemNo, {from: this.props.account});
     console.log('Bounty Claimed')
   }
@@ -47,7 +48,8 @@ export default class ModalAnswer extends React.Component {
     this.CollectBounty();
   }
 
-  async loadAnswers(){                                                                                    // Called from constructor to load all holes from colony
+  async loadAnswers(){
+    // Get all answers from Blockchain
     const answers = await itemHelper.getItemAnswers(this.props.contract, this.props.account, this.props.itemNo);
     this.setState({
       answers: answers

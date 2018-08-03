@@ -13,6 +13,7 @@ export default class Answer extends React.Component {
     }
 
     async acceptOnChain() {
+      // Save the Answer to Blockchain
       console.log('Accepting onchain...')
       await this.props.contract.acceptAnswer.sendTransaction(this.props.answerInfo.itemNo, this.props.answerInfo.answerNo, {from: this.props.account});
       console.log('Accepting onchain done!')
