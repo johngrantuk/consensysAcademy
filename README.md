@@ -8,6 +8,23 @@ Picture stored on IPFS.
 People can upvote? (think of stack overflow)
 Original poster accepts answer.
 
+Displays active account
+Signs transactions using MetaMask
+UI will reflect changes in contracts
+
+Tests run using truffle test
+
+Design patterns link
+Common attacks link
+
+IPFS explanantion
+UPOrt explanantion
+OracleEthPrice
+ItemUpgradeable
+Testnet deployed
+
+
+
 ## Running Project
 
 Clone project: ```git clone https://github.com/johngrantuk/consensysAcademy.git```
