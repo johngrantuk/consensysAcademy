@@ -8,6 +8,10 @@ import getWeb3 from '../utils/getWeb3'
 import ModalAdd from './modalAdd';
 import ItemList from './itemList';
 import Uport from './uport';
+import Oracle from './oracle';
+import OracleEthPrice from '../../build/contracts/OracleEthPrice.json';
+
+
 
 export default class Gallery extends React.Component {
   constructor(props) {
@@ -48,7 +52,6 @@ export default class Gallery extends React.Component {
       })
       this.loadItems();
     }
-
   }
 
   async loadContracts(accounts){
@@ -68,7 +71,7 @@ export default class Gallery extends React.Component {
 
     let ItemUpgradeableInstance = await item.at(itemAddr);
 
-    this.SetUpEvents(ItemUpgradeableInstance);
+    this.SetUpItemEvents(ItemUpgradeableInstance);
     console.log('test')
     let itemCount = await ItemUpgradeableInstance.getItemCount({from: accounts[0]});
 
@@ -81,9 +84,19 @@ export default class Gallery extends React.Component {
     setInterval(() => this.checkMetaMask(), 100);
     this.loadItems();
 
+    let oracle = contract(OracleEthPrice);
+    oracle.setProvider(this.state.web3.currentProvider);
+
+    let oracleInstance = await oracle.deployed();
+
+    this.setState({
+      oracleInstance: oracleInstance
+    })
   }
 
-  SetUpEvents(itemInstance) {
+
+
+  SetUpItemEvents(itemInstance) {
     var itemAddedEvent = itemInstance.ItemAdded({_from: this.state.web3.eth.coinbase});
 
     itemAddedEvent.watch((error, result) => {
@@ -153,6 +166,13 @@ export default class Gallery extends React.Component {
         </div>
 
         <Uport></Uport>
+
+        <Oracle
+          account={this.state.account}
+          web3={this.state.web3}
+          oracleInstance={this.state.oracleInstance}
+          >
+        </Oracle>
       </div>
     );
   }

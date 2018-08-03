@@ -55,9 +55,13 @@
   },
   "dependencies": {
     "async": "^2.6.1",
+    "biskviit": "^2.0.0",
+    "dns": "^0.2.2",
     "dotenv": "^2.0.0",
+    "encoding": "^0.1.12",
     "ipfs": "^0.29.3",
     "ipfs-api": "^22.2.3",
+    "node-fetch": "^2.2.0",
     "openzeppelin-solidity": "1.10.0",
     "react": "^15.6.2",
     "react-bootstrap": "^0.32.1",

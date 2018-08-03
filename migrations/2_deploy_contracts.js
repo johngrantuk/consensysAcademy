@@ -1,6 +1,7 @@
 var ItemStorage = artifacts.require("./ItemStorage.sol");
 var ItemUpgradeable = artifacts.require("./ItemUpgradeable.sol");
 var Parent = artifacts.require("./Parent.sol");
+var OracleEthPrice = artifacts.require("./OracleEthPrice.sol");
 
 module.exports = function(deployer) {
   /*
@@ -14,6 +15,8 @@ module.exports = function(deployer) {
   /*
   Deploys Parent and ItemUpgradeable contracts. Then call registerItem on Parent so that the first upgradeable Item contract is set-up with storage contract.
   */
+  deployer.deploy(OracleEthPrice);
+
   deployer.deploy(ItemUpgradeable).then(function (instance) {
     itemUpgradeableInstance = instance;
     return deployer.deploy(Parent);
