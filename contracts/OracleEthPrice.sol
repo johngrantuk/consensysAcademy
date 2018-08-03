@@ -10,19 +10,22 @@ contract OracleEthPrice is Ownable{
   // Callback function
   event CallbackGetEthPrice();
 
+  // Calls the callback function
+  // This could be run on a timer or similar to consistently update price.
   function updateEthPrice() public {
-    // Calls the callback function
     emit CallbackGetEthPrice();
   }
 
+  // Sets the price. Only accessible by a trusted owner so the price is reliable.
+  // uint256 price Eth price in USD.
   function setEthPrice(uint256 price) public
   onlyOwner()
   {
-    // If it isn't sent by a trusted oracle
-    // a.k.a ourselves, ignore it
     ethPrice = price;
   }
 
+  // Get the Eth price.
+  // return uint256 price Eth price in USD.
   function getEthPrice() constant public returns (uint256) {
     return ethPrice;
   }

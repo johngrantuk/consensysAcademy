@@ -13,12 +13,17 @@ contract Parent is Ownable, Destructible {
   https://blog.colony.io/writing-upgradeable-contracts-in-solidity-6743f0eecc88
   https://medium.com/@nrchandan/interfaces-make-your-solidity-contracts-upgradeable-74cd1646a717
   */
-  event ItemContractCreated(address item, uint now);
-  event ItemContractUpgraded(address item, uint now);
 
+  // Emitted when an Item contract is registered
+  event ItemContractCreated(address item, uint now);
+  // Emitted when the Item contract is upgraded
+  event ItemContractUpgraded(address item, uint now);
+  // Stored itemContracts address
   mapping(bytes32 => address) public itemContracts;
 
   // This maps the Item contract to a particular key & sets it's data store.
+  // bytes32 key_ ID/Key of Item.
+  // address itemAddress Address of Item contract
   function registerItem(bytes32 key_, address itemAddress) public
   onlyOwner()
   {
@@ -31,6 +36,8 @@ contract Parent is Ownable, Destructible {
   }
 
   // Returns Item contract address mapped to key
+  // bytes32 key_ ID/Key of Item.
+  // return address Address of Item contract at key.
   function getItemContractAddress(bytes32 key_) public constant
   returns (address)
   {
@@ -38,6 +45,8 @@ contract Parent is Ownable, Destructible {
   }
 
   // Upgrades contract mapped to key_ with new Item contract address
+  // bytes32 key_ ID/Key of Item.
+  // address newItemAddress Address of new Item contract
   function upgradeItemContract(bytes32 key_, address newItemAddress) public
   onlyOwner()
   {
@@ -53,6 +62,7 @@ contract Parent is Ownable, Destructible {
   }
 
   // Uses circuit breaker to pause storage functionality but still allow items to be cancelled and bounty refunded
+  // bytes32 key_ ID/Key of Item.
   function toggleItemStorageActive(bytes32 key_) public
   onlyOwner()
   {
@@ -64,6 +74,8 @@ contract Parent is Ownable, Destructible {
     itemStore.toggle_active();
   }
 
+  // Kills contract and sends remaining Ether to address.
+  // address transferAddress_ Address remaining Ether will be sent to.
   function kill(address transferAddress_) public
   {
     destroyAndSend(transferAddress_);
