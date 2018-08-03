@@ -19,7 +19,7 @@ export default class Uport extends React.Component {
     };                                                                                 // Load all the existing data from Colony
   }
 
-    handleUportSignin = () => {
+  handleUportSignin = () => {
     /*
     At the moment this is just showing that I can integrate with uPort. When a user clicks Sign In and authenticates with uPort app the user info is shown.
     In the future using uPort seems like a nice way to authenticate users on a live network.
@@ -33,7 +33,8 @@ export default class Uport extends React.Component {
         phone: credentials.phone,
         key: credentials.publicKey,
         uport: true
-      })
+      });
+      this.props.handleUportInfo(credentials);
     })
   }
 

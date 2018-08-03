@@ -40,6 +40,7 @@ export default class ModalAdd extends React.Component {
               account={this.props.account}
               web3={this.props.web3}
               closeModal={this.handleClose}
+              uportName={this.props.uportName}
               />
           </Modal.Body>
         </Modal>

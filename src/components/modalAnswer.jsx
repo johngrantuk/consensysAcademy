@@ -64,6 +64,7 @@ export default class ModalAnswer extends React.Component {
         status =
         <div>
         <h4>ANSWERED</h4>
+        <strong>{this.state.answerInfo.uportName}</strong><br/>
         <strong>{this.state.answerInfo.answer}</strong><br/>
         <strong>{this.state.answerInfo.date}</strong>
         </div>
@@ -72,6 +73,7 @@ export default class ModalAnswer extends React.Component {
           status =
           <div>
           <h4>ANSWERED</h4>
+          <strong>{this.state.answerInfo.uportName}</strong><br/>
           <strong>{this.state.answerInfo.answer}</strong><br/>
           <strong>{this.state.answerInfo.date}</strong><br/>
           <Button bsStyle="primary" onClick={this.handleBountyCollection}>COLLECT BOUNTY</Button>
@@ -80,6 +82,7 @@ export default class ModalAnswer extends React.Component {
           status =
           <div>
           <h4>ANSWERED</h4>
+          <strong>{this.state.answerInfo.uportName}</strong><br/>
           <strong>{this.state.answerInfo.answer}</strong><br/>
           <strong>{this.state.answerInfo.date}</strong>
           </div>
@@ -120,6 +123,7 @@ export default class ModalAnswer extends React.Component {
               itemInfo={this.props.itemInfo}
               answers={this.state.answers}
               closeModal={this.handleClose}
+              uportName={this.props.uportName}
               />
           </Modal.Body>
         </Modal>

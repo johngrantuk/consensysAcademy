@@ -21,9 +21,10 @@ export default class Item extends React.Component {
           <Panel.Body>
             <img role="presentation" style={{"width" : "100%"}} src={this.props.itemInfo.picLink}/>
             <br/><br/>
-            <strong>Bounty: </strong>: <span>{this.props.itemInfo.bountyEth}Eth</span><br/>
-            <strong>Info</strong>: <span>{this.props.itemInfo.info}</span><br/>
-            <strong>Answers</strong>: <span>{this.props.itemInfo.noAnswers}</span><br/>
+            <strong>Owner: </strong> <span>{this.props.itemInfo.uportName}</span><br/>
+            <strong>Bounty: </strong> <span>{this.props.itemInfo.bountyEth}Eth</span><br/>
+            <strong>Info:</strong> <span>{this.props.itemInfo.info}</span><br/>
+            <strong>Answers:</strong> <span>{this.props.itemInfo.noAnswers}</span><br/>
 
             <ModalAnswer
               itemNo={this.props.itemInfo.itemNo}
@@ -32,6 +33,7 @@ export default class Item extends React.Component {
               web3={this.props.web3}
               account={this.props.account}
               itemInfo={this.props.itemInfo}
+              uportName={this.props.uportName}
               />
           </Panel.Body>
       }

@@ -32,7 +32,8 @@ exports.getItems = async (Web3, ItemContract, Account) => {
         finalised: finalised,
         cancelled: cancelled,
         noAnswers: noAnswers,
-        isBountyCollected: isBountyCollected
+        isBountyCollected: isBountyCollected,
+        uportName: info.uportName
       })
       i++;
   }
@@ -63,7 +64,8 @@ exports.getItemAnswers = async (ItemContract, Account, ItemNo) => {
       answerNo: i,
       owner: answerOwner,
       date: info.date,
-      answer: info.answer
+      answer: info.answer,
+      uportName: info.uportName
     })
     i++;
   }

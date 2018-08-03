@@ -20,6 +20,8 @@ export default class Gallery extends React.Component {
     this.state = {
       noItems: 'Not loaded',
       items: [{name: 'default'}, {name: 'default2'}],
+      uportCredentials: 'No Credentials',
+      uportCredentialsName: 'No UPort Info'
     }
 
   }
@@ -52,6 +54,16 @@ export default class Gallery extends React.Component {
       })
       this.loadItems();
     }
+  }
+
+  handleUportInfo = (UportInfo) => {
+
+    console.log('Handle UPort Info');
+    console.log(UportInfo.name)
+    this.setState({
+      uportCredentials: UportInfo,
+      uportCredentialsName: UportInfo.name
+    })
   }
 
   async loadContracts(accounts){
@@ -93,8 +105,6 @@ export default class Gallery extends React.Component {
       oracleInstance: oracleInstance
     })
   }
-
-
 
   SetUpItemEvents(itemInstance) {
     var itemAddedEvent = itemInstance.ItemAdded({_from: this.state.web3.eth.coinbase});
@@ -152,6 +162,7 @@ export default class Gallery extends React.Component {
               contract={this.state.contractItem}
               account={this.state.account}
               web3={this.state.web3}
+              uportName={this.state.uportCredentialsName}
               />
           </div>
         </Jumbotron>
@@ -162,10 +173,11 @@ export default class Gallery extends React.Component {
           contract={this.state.contractItem}
           account={this.state.account}
           web3={this.state.web3}
+          uportName={this.state.uportCredentialsName}
           />
         </div>
 
-        <Uport></Uport>
+        <Uport handleUportInfo={this.handleUportInfo}></Uport>
 
         <Oracle
           account={this.state.account}

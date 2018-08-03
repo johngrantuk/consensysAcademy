@@ -29,6 +29,7 @@ export default class NewAnswerForm extends React.Component {
       console.log('Submitting Answer To Ethereum: ');
       console.log('Will be answer no: ' + (Number(this.props.noAnswers) + 1));
       console.log(this.state.answer);
+      console.log('Uport: ' + this.props.uportName)
 
       const answerDetails = {
         itemNo: this.props.itemNo,
@@ -36,7 +37,8 @@ export default class NewAnswerForm extends React.Component {
         id: uuid.v4(),
         date: new Date().toLocaleString(),
         answer: this.state.answer,
-        owner: this.props.account
+        owner: this.props.account,
+        uportName: this.props.uportName
       };
 
       const answerHash = await ipfsHelper.uploadInfo(answerDetails);

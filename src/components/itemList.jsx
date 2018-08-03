@@ -15,6 +15,7 @@ export default class ItemList extends React.Component {
               contract={this.props.contract}
               account={this.props.account}
               web3={this.props.web3}
+              uportName={this.props.uportName}
               />
           )}
         </div>

@@ -29,7 +29,7 @@ export default class Answer extends React.Component {
       let status;
       if(this.props.itemOwner === this.props.account){
         status = <div>
-                  {this.props.answerInfo.date} {this.props.answerInfo.answer}
+                  {this.props.answerInfo.uportName} {this.props.answerInfo.date} {this.props.answerInfo.answer}
                   <OverlayTrigger placement="right" overlay={tooltipAccept}>
                     <Button bsStyle="primary"  onClick={this.handleSubmit}>Accept Answer</Button>
                   </OverlayTrigger>
@@ -37,7 +37,7 @@ export default class Answer extends React.Component {
                 </div>
       }else{
         status = <div>
-                  {this.props.answerInfo.date} {this.props.answerInfo.answer}
+                  {this.props.answerInfo.uportName} {this.props.answerInfo.date} {this.props.answerInfo.answer}
                   <hr></hr>
                 </div>
       }

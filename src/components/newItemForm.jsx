@@ -52,7 +52,8 @@ export default class NewItemForm extends React.Component {
         date: new Date().toLocaleString(),
         info: Info,
         bounty: Bounty,
-        picHash: hash
+        picHash: hash,
+        uportName: this.props.uportName
       };
 
       console.log('Uploading Item Info to IPFS...')
