@@ -3,6 +3,7 @@ pragma solidity ^0.4.17;
 import { Ownable } from 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 
 contract OracleEthPrice is Ownable{
+  // Contract demonstrates how an Oracle can be implemented to store external data to the blockchain.
 
   // EthPrice storage
   uint256 ethPrice;
