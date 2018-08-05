@@ -1,0 +1,15 @@
+Rinkeby:
+OracleEthPrice
+  Tx Hash: 0xd2ebfeb061c1d9543e95a496e10719782ed1edd248122f36d3c0b7db3b8c0608
+  Contract Address: 0xe6ea450334468b28dbF5f3A64Fb166eB2C308bF1
+
+ItemUpgradeable...
+  Tx Hash: 0x751f94f005892bb17a06d1d3190e07d893fe02a78429e24d5af8903c81b4fbb0
+  Contract Address: 0xd6a8aaaab5c56d66d575d1c34cb990a9c6c819f4
+
+Deploying Parent...
+  Tx Hash: 0xf5b7715cfe2b1dbc422373c5396a499faa8f15bd467cc7b5c5cb016be610bd56
+  Contract Address: 0x95cc7de7051b3064b1a3970f39f008619c27db84
+
+ItemUpgradeable set-up as first version with storage
+  Tx Hash: 0x6466ed8244069e77ac5eb4f4fafd6ba6ee342d0af2ea031ce2adc2d131b9cd2d
