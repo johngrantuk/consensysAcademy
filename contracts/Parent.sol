@@ -21,9 +21,10 @@ contract Parent is Ownable, Destructible {
   // Stored itemContracts address
   mapping(bytes32 => address) public itemContracts;
 
-  // This maps the Item contract to a particular key & sets it's data store.
-  // bytes32 key_ ID/Key of Item.
-  // address itemAddress Address of Item contract
+  /** @dev This maps the Item contract to a particular key & sets it's data store.
+  * @param key_ bytes32 ID/Key of Item.
+  * @param itemAddress address Address of Item contract
+  */
   function registerItem(bytes32 key_, address itemAddress) public
   onlyOwner()
   {
@@ -35,18 +36,20 @@ contract Parent is Ownable, Destructible {
     emit ItemContractCreated(itemAddress, now);
   }
 
-  // Returns Item contract address mapped to key
-  // bytes32 key_ ID/Key of Item.
-  // return address Address of Item contract at key.
+  /** @dev Returns Item contract address mapped to key
+  * @param key_ bytes32 ID/Key of Item.
+  * @return address Address of Item contract at key.
+  */
   function getItemContractAddress(bytes32 key_) public constant
   returns (address)
   {
     return itemContracts[key_];
   }
 
-  // Upgrades contract mapped to key_ with new Item contract address
-  // bytes32 key_ ID/Key of Item.
-  // address newItemAddress Address of new Item contract
+  /** @dev Upgrades contract mapped to key_ with new Item contract address
+  * @param key_ bytes32 ID/Key of Item.
+  * @param newItemAddress address Address of new Item contract
+  */
   function upgradeItemContract(bytes32 key_, address newItemAddress) public
   onlyOwner()
   {
@@ -61,8 +64,9 @@ contract Parent is Ownable, Destructible {
     emit ItemContractUpgraded(newItemAddress, now);
   }
 
-  // Uses circuit breaker to pause storage functionality but still allow items to be cancelled and bounty refunded
-  // bytes32 key_ ID/Key of Item.
+  /** @dev Uses circuit breaker to pause storage functionality but still allow items to be cancelled and bounty refunded
+  * @param key_ bytes32 ID/Key of Item.
+  */
   function toggleItemStorageActive(bytes32 key_) public
   onlyOwner()
   {
@@ -74,8 +78,9 @@ contract Parent is Ownable, Destructible {
     itemStore.toggle_active();
   }
 
-  // Kills contract and sends remaining Ether to address.
-  // address transferAddress_ Address remaining Ether will be sent to.
+  /** @dev Kills contract and sends remaining Ether to address.
+  * @param transferAddress_ address Address remaining Ether will be sent to.
+  */
   function kill(address transferAddress_) public
   {
     destroyAndSend(transferAddress_);
