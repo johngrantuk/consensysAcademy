@@ -180,7 +180,6 @@ contract ItemStorage is Ownable, Destructible {
 
   /** @dev Get item with id.
   * @param _id uint256 Item ID.
-  * @return uint256 The Item id.
   * @return bytes32 Item IPFS digest.
   * @return uint8 Item IPFS hash function.
   * @return uint8 Item IPFS size.
@@ -201,8 +200,8 @@ contract ItemStorage is Ownable, Destructible {
 
   /** @dev Get item picture IPFS hash info.
   * @param _id uint256 Item ID.
-  * @return uint8 Item IPFS hash function.
   * @return bytes32 Item IPFS digest.
+  * @return uint8 Item IPFS hash function.
   * @return uint8 Item IPFS size.
   */
   function getItemPicHash(uint256 _id) public view
@@ -273,7 +272,7 @@ contract ItemStorage is Ownable, Destructible {
   }
 
   /** @dev Accept answer with _answerId for Item with _itemId from _senderAddr which should be owner of Item.
-  * @param _itemId uint25 Item ID.
+  * @param _itemId uint256 Item ID.
   * @param _answerId uint256 Answer ID.
   * @param _senderAddr address Address of Item owner.
   * @return bool true

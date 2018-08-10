@@ -23,22 +23,22 @@ contract ItemUpgradeable is Destructible {
   // Emitted when an Item is cancelled.
   event ItemCancelled();
 
-  /*
-  Sets the address of the Storage contract.
-  address _itemStorageAddr Address of storage contract.
+  /** @dev Sets the address of the Storage contract.
+  * @param _itemStorageAddr address Address of storage contract.
   */
   function setDataStore(address _itemStorageAddr) public {
     itemStorageAddr = _itemStorageAddr;
   }
 
-  // Stores an item.
-  // bytes32 _itemDigest Item IPFS digest.
-  // uint8 _itemHashFunction Item IPFS hash function.
-  // uint8 _itemSize Item IPFS size.
-  // bytes32 _picDigest Picture IPFS digest.
-  // uint8  _picHashFunction Picture IPFS hash function.
-  // uint8 _picSize Picture IPFS size.
-  // return uint256 The item id.
+  /** @dev Stores an item.
+  * @param _itemDigest bytes32 Item IPFS digest.
+  * @param _itemHashFunction uint8 Item IPFS hash function.
+  * @param _itemSize uint8 Item IPFS size.
+  * @param _picDigest bytes32 Picture IPFS digest.
+  * @param _picHashFunction uint8 Picture IPFS hash function.
+  * @param _picSize uint8 Picture IPFS size.
+  * @return uint256 The Item id.
+  */
   function makeItem(bytes32 _itemDigest, uint8 _itemHashFunction, uint8 _itemSize, bytes32 _picDigest, uint8 _picHashFunction, uint8 _picSize) public payable returns (uint256)
   {
     uint256 itemCount;
@@ -50,54 +50,58 @@ contract ItemUpgradeable is Destructible {
     return itemCount;
   }
 
-  // Get item count.
-  // return uint256 The number of items.
+  /** @dev Get item count.
+  * @return uint256 The number of items.
+  */
   function getItemCount() public view returns (uint256) {
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     return itemStore.getItemCount();
   }
 
-  // dev Get item with id.
-  // uint256 _id Item ID.
-  // return bytes32 Item IPFS digest.
-  // return uint8 Item IPFS hash function.
-  // return uint8 Item IPFS size.
-  // return address Item owner address.
-  // return uint256 Bounty amount.
-  // return bool Is item answered.
-  // return bool Is item cancelled.
-  // return uint256 No of Item answers.
-  // return bool Is Bounty collected.
+  /** @dev Get item with id.
+  * @param _id uint256 Item ID.
+  * @return bytes32 Item IPFS digest.
+  * @return uint8 Item IPFS hash function.
+  * @return uint8 Item IPFS size.
+  * @return address Item owner address.
+  * @return uint256 Bounty amount.
+  * @return bool Is item answered.
+  * @return bool Is item cancelled.
+  * @return uint256 No of Item answers.
+  * @return bool Is Bounty collected.
+  */
   function getItem(uint256 _id) public view returns (bytes32, uint8, uint8, address, uint256, bool, bool, uint256, bool) {
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     return itemStore.getItem(_id);
   }
 
-  // Get no of answers for Item.
-  // uint256 _itemId The item id.
-  // uint256 The number answers for item with _itemId.
+  /** @dev Get no of answers for Item.
+  * @param _itemId uint256 The item id.
+  * @return uint256 The number answers for item with _itemId.
+  */
   function getItemAnswerCount(uint256 _itemId) public view returns (uint256) {
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     return itemStore.getItemAnswerCount(_itemId);
   }
 
-  // Get item picture IPFS hash info.
-  // uint256 _id Item ID.
-  // bytes32 Item IPFS digest.
-  // uint8 Item IPFS hash function.
-  // uint8 Item IPFS size.
+  /** @dev Get item picture IPFS hash info.
+  * @param _id uint256 Item ID.
+  * @return bytes32 Item IPFS digest.
+  * @return uint8 Item IPFS hash function.
+  * @return uint8 Item IPFS size.
+  */
   function getItemPicHash(uint256 _id) public view returns (bytes32, uint8, uint8) {
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     return itemStore.getItemPicHash(_id);
   }
 
-  // Add answer to Item.
-  // uint256 _itemId The item id.
-  // bytes32 _answerDigest Answer IPFS digest.
-  // uint8 _answerHashFunction Answer IPFS hash function.
-  // uint8 _answerSize AnswerItem IPFS size.
-  // address _owner Answer owner address.
-  // uint256 The answer id.
+  /** @dev Add answer to Item.
+  * @param _itemId uint256 The item id.
+  * @param _answerDigest bytes32 Answer IPFS digest.
+  * @param _answerHashFunction uint8 Answer IPFS hash function.
+  * @param _answerSize uint8 AnswerItem IPFS size.
+  * @return uint256 The answer id.
+  */
   function addAnswer(uint256 _itemId, bytes32 _answerDigest, uint8 _answerHashFunction, uint8 _answerSize) public returns (uint256){
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     uint256 answerId;
@@ -106,24 +110,25 @@ contract ItemUpgradeable is Destructible {
     return answerId;
   }
 
-  // Get answer with _answerId for Item with _itemId.
-  // uint256 _itemId Item ID.
-  // uint256 _answerId Answer ID.
-  // return bytes32 Answer IPFS digest.
-  // return uint8 Answer IPFS hash function.
-  // return uint8 Answer IPFS size.
-  // return address Answer owner address.
-  // return uint256 Answer Item ID.
+  /** @dev Get answer with _answerId for Item with _itemId.
+  * @param _itemId uint256 Item ID.
+  * @param _answerId uint256 Answer ID.
+  * @return bytes32 Answer IPFS digest.
+  * @return uint8 Answer IPFS hash function.
+  * @return uint8 Answer IPFS size.
+  * @return address Answer owner address.
+  * @return uint256 Answer Item ID.
+  */
   function getAnswer(uint256 _itemId, uint256 _answerId) public view returns (bytes32, uint8, uint8, address, uint256) {
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     return itemStore.getAnswer(_itemId, _answerId);
   }
 
-  // Accept answer with _answerId for Item with _itemId from _senderAddr which should be owner of Item.
-  // uint256 _itemId Item ID.
-  // uint256 _answerId Answer ID.
-  // address _senderAddr Address of Item owner.
-  // return bool true
+  /** @dev Accept answer with _answerId for Item with _itemId.
+  * @param _itemId uint256 Item ID.
+  * @param _answerId uint256 Answer ID.
+  * @return bool true
+  */
   function acceptAnswer(uint256 _itemId, uint256 _answerId) public returns (bool) {
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     bool result;
@@ -132,29 +137,30 @@ contract ItemUpgradeable is Destructible {
     return result;
   }
 
-  // Claim bounty for Item with ID.
-  // uint256 _itemId Item ID.
-  // address _owner Should be address of answer owner.
-  // return bool true
+  /** @dev Claim bounty for Item with ID.
+  * @param _itemId uint256 Item ID.
+  * @return bool true
+  */
   function claimBounty(uint256 _itemId) public returns (bool){
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     return itemStore.claimBounty(_itemId, msg.sender);
   }
 
-  // Get accepted answer info for Item with ID.
-  // uint256 _itemId Item ID.
-  // return bytes32 Answer IPFS hash digest.
-  // return uint8 Answer IPFS hash function.
-  // return uint8 Answer IPFS size.
+  /** @dev Get accepted answer info for Item with ID.
+  * @param _itemId uint256 Item ID.
+  * @return bytes32 Answer IPFS hash digest.
+  * @return uint8 Answer IPFS hash function.
+  * @return uint8 Answer IPFS size.
+  */
   function getAcceptedAnswer(uint256 _itemId) public view returns (bytes32, uint8, uint8) {
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     return itemStore.getAcceptedAnswer(_itemId);
   }
 
-  // Cancel Item with ID.
-  // uint256 _itemId Item ID.
-  // address _owner Should be address of Item owner.
-  // return bool true
+  /** @dev Cancel Item with ID.
+  * @param _itemId uint256 Item ID.
+  * @return bool true
+  */
   function cancelItem(uint256 _itemId) public returns (bool){
     ItemStorage itemStore = ItemStorage(itemStorageAddr);
     bool result;
@@ -164,8 +170,9 @@ contract ItemUpgradeable is Destructible {
     return result;
   }
 
-  // Kill contract and send outstanding ether to address.
-  // address transferAddress_ Address to send Ether.
+  /** @dev Kill contract and send outstanding ether to address.
+  * @param transferAddress_ address Address to send Ether.
+  */
   function kill(address transferAddress_) public
   {
     selfdestruct(transferAddress_);
