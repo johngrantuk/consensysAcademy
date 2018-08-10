@@ -130,16 +130,16 @@ contract ItemStorage is Ownable, Destructible {
     stopped = !stopped;
   }
 
-
-  // Stores an item.
-  // address _owner Owner of the item.
-  // bytes32 _itemDigest Item IPFS digest.
-  // uint8 _itemHashFunction Item IPFS hash function.
-  // uint8 _itemSize Item IPFS size.
-  // bytes32 _picDigest Picture IPFS digest.
-  // uint8  _picHashFunction Picture IPFS hash function.
-  // uint8 _picSize Picture IPFS size.
-  // return uint256 The item id.
+  /** @dev Stores an item.
+  * @param _owner address Owner of the item.
+  * @param _itemDigest bytes32 Item IPFS digest.
+  * @param _itemHashFunction uint8 Item IPFS hash function.
+  * @param _itemSize uint8 Item IPFS size.
+  * @param _picDigest bytes32 Picture IPFS digest.
+  * @param _picHashFunction uint8 Picture IPFS hash function.
+  * @param _picSize uint8 Picture IPFS size.
+  * @return uint256 The Item id.
+  */
   function makeItem(address _owner, uint256 _bounty, bytes32 _itemDigest, uint8 _itemHashFunction, uint8 _itemSize, bytes32 _picDigest, uint8 _picHashFunction, uint8 _picSize) public payable
   bountyEqualsPayable(_bounty, msg.value)
   stop_if_emergency()
@@ -166,25 +166,31 @@ contract ItemStorage is Ownable, Destructible {
     return itemCount;
   }
 
-
-  // Get item count.
-  // return uint256 The number of items.
+  /** @dev Get item count.
+  * @return uint256 The number of items.
+  */
   function getItemCount() public view returns (uint256) {
     return itemCount;
   }
 
 
   // dev Get item with id.
-  // uint256 _id Item ID.
-  // return bytes32 Item IPFS digest.
-  // return uint8 Item IPFS hash function.
-  // return uint8 Item IPFS size.
-  // return address Item owner address.
-  // return uint256 Bounty amount.
-  // return bool Is item answered.
-  // return bool Is item cancelled.
-  // return uint256 No of Item answers.
-  // return bool Is Bounty collected.
+  //
+
+
+  /** @dev Get item with id.
+  * @param _id uint256 Item ID.
+  * @return uint256 The Item id.
+  * @return bytes32 Item IPFS digest.
+  * @return uint8 Item IPFS hash function.
+  * @return uint8 Item IPFS size.
+  * @return address Item owner address.
+  * @return uint256 Bounty amount.
+  * @return bool Is item answered.
+  * @return bool Is item cancelled.
+  * @return uint256 No of Item answers.
+  * @return bool Is Bounty collected.
+  */
   function getItem(uint256 _id) public view
   itemExists(_id)
   returns (bytes32, uint8, uint8, address, uint256, bool, bool, uint256, bool)
@@ -193,11 +199,12 @@ contract ItemStorage is Ownable, Destructible {
     return (t.specificationHash.digest, t.specificationHash.hashFunction, t.specificationHash.size, t.owner, t.bounty, t.isAnswered, t.isCancelled, t.answerCount, t.isBountyCollected);
   }
 
-  // Get item picture IPFS hash info.
-  // uint256 _id Item ID.
-  // bytes32 Item IPFS digest.
-  // uint8 Item IPFS hash function.
-  // uint8 Item IPFS size.
+  /** @dev Get item picture IPFS hash info.
+  * @param _id uint256 Item ID.
+  * @return uint8 Item IPFS hash function.
+  * @return bytes32 Item IPFS digest.
+  * @return uint8 Item IPFS size.
+  */
   function getItemPicHash(uint256 _id) public view
   itemExists(_id)
   returns (bytes32, uint8, uint8)
@@ -206,13 +213,14 @@ contract ItemStorage is Ownable, Destructible {
     return (t.picHash.digest, t.picHash.hashFunction, t.picHash.size);
   }
 
-  // Add answer to Item.
-  // uint256 _itemId The item id.
-  // bytes32 _answerDigest Answer IPFS digest.
-  // uint8 _answerHashFunction Answer IPFS hash function.
-  // uint8 _answerSize AnswerItem IPFS size.
-  // address _owner Answer owner address.
-  // uint256 The answer id.
+  /** @dev Add answer to Item.
+  * @param _itemId uint256 The item id.
+  * @param _answerDigest bytes32 Answer IPFS digest.
+  * @param _answerHashFunction uint8 Answer IPFS hash function.
+  * @param _answerSize uint8 AnswerItem IPFS size.
+  * @param _owner address Answer owner address.
+  * @return uint256 The answer id.
+  */
   function addAnswer(uint256 _itemId, bytes32 _answerDigest, uint8 _answerHashFunction, uint8 _answerSize, address _owner) public
   itemExists(_itemId)
   stop_if_emergency()
@@ -233,9 +241,10 @@ contract ItemStorage is Ownable, Destructible {
     return t.answerCount;
   }
 
-  // Get no of answers for Item.
-  // uint256 _itemId The item id.
-  // uint256 The number answers for item with _itemId.
+  /** @dev Get no of answers for Item.
+  * @param _itemId uint256 The item id.
+  * @return uint256 The number answers for item with _itemId.
+  */
   function getItemAnswerCount(uint256 _itemId) public view
   itemExists(_itemId)
   returns (uint256)
@@ -244,14 +253,15 @@ contract ItemStorage is Ownable, Destructible {
     return t.answerCount;
   }
 
-  // Get answer with _answerId for Item with _itemId.
-  // uint256 _itemId Item ID.
-  // uint256 _answerId Answer ID.
-  // return bytes32 Answer IPFS digest.
-  // return uint8 Answer IPFS hash function.
-  // return uint8 Answer IPFS size.
-  // return address Answer owner address.
-  // return uint256 Answer Item ID.
+  /** @dev Get answer with _answerId for Item with _itemId.
+  * @param _itemId uint256 Item ID.
+  * @param _answerId uint256 Answer ID.
+  * @return bytes32 Answer IPFS digest.
+  * @return uint8 Answer IPFS hash function.
+  * @return uint8 Answer IPFS size.
+  * @return address Answer owner address.
+  * @return uint256 Answer Item ID.
+  */
   function getAnswer(uint256 _itemId, uint256 _answerId) public view
   itemExists(_itemId)
   answerExists(_itemId, _answerId)
@@ -262,11 +272,12 @@ contract ItemStorage is Ownable, Destructible {
     return (answer.answerHash.digest, answer.answerHash.hashFunction, answer.answerHash.size, answer.owner, answer.itemId);
   }
 
-  // Accept answer with _answerId for Item with _itemId from _senderAddr which should be owner of Item.
-  // uint256 _itemId Item ID.
-  // uint256 _answerId Answer ID.
-  // address _senderAddr Address of Item owner.
-  // return bool true
+  /** @dev Accept answer with _answerId for Item with _itemId from _senderAddr which should be owner of Item.
+  * @param _itemId uint25 Item ID.
+  * @param _answerId uint256 Answer ID.
+  * @param _senderAddr address Address of Item owner.
+  * @return bool true
+  */
   function acceptAnswer(uint256 _itemId, uint256 _answerId, address _senderAddr) public
   itemExists(_itemId)
   itemNotAnswered(_itemId)
@@ -282,10 +293,11 @@ contract ItemStorage is Ownable, Destructible {
     return true;
   }
 
-  // Claim bounty for Item with ID.
-  // uint256 _itemId Item ID.
-  // address _owner Should be address of answer owner.
-  // return bool true
+  /** @dev Claim bounty for Item with ID.
+  * @param _itemId uint256 Item ID.
+  * @param _owner address Should be address of answer owner.
+  * @return bool true
+  */
   function claimBounty(uint256 _itemId, address _owner) public
   itemExists(_itemId)
   itemAnswered(_itemId)
@@ -301,11 +313,12 @@ contract ItemStorage is Ownable, Destructible {
     return true;
   }
 
-  // Get accepted answer info for Item with ID.
-  // uint256 _itemId Item ID.
-  // return bytes32 Answer IPFS hash digest.
-  // return uint8 Answer IPFS hash function.
-  // return uint8 Answer IPFS size.
+  /** @dev Get accepted answer info for Item with ID.
+  * @param _itemId uint256 Item ID.
+  * @return bytes32 Answer IPFS hash digest.
+  * @return uint8 Answer IPFS hash function.
+  * @return uint8 Answer IPFS size.
+  */
   function getAcceptedAnswer(uint256 _itemId) public view
   itemExists(_itemId)
   itemAnswered(_itemId)
@@ -316,10 +329,11 @@ contract ItemStorage is Ownable, Destructible {
     return (t.acceptedAnswer.answerHash.digest, t.acceptedAnswer.answerHash.hashFunction, t.acceptedAnswer.answerHash.size);
   }
 
-  // Cancel Item with ID.
-  // uint256 _itemId Item ID.
-  // address _owner Should be address of Item owner.
-  // return bool true
+  /** @dev Cancel Item with ID.
+  * @param _itemId uint256 Item ID.
+  * @param _senderAddr address Should be address of Item owner.
+  * @return bool true
+  */
   function cancelItem(uint256 _itemId, address _senderAddr) public
   itemExists(_itemId)
   isItemOwner(_itemId, _senderAddr)
@@ -335,8 +349,10 @@ contract ItemStorage is Ownable, Destructible {
     return true;
   }
 
-  // Kill contract and send outstanding ether to address.
-  // address transferAddress_ Address to send Ether.
+
+  /** @dev Kill contract and send outstanding ether to address.
+  * @param transferAddress_ address Address to send Ether.
+  */
   function kill(address transferAddress_) public
   {
     destroyAndSend(transferAddress_);
